@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES5",
+    "declaration": true,
+    "outDir": "./dist/lib/es5",
+    "moduleResolution": "node",
+    "lib": ["ES2020", "DOM"],
+    "paths": {
+      "@/*": ["./src/*"] // Now you can import file like '@src/somefile/...'
+    }
+  },
+  "include": ["src/**/*"]
+}
