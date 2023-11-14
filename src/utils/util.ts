@@ -6,14 +6,7 @@ import {
   RTFU,
   UnitObjType,
 } from '@/types/util';
-import {
-  MILLISECONDS_A_SECOND,
-  RSC_REGX,
-  SECONDS_A_DAY,
-  SECONDS_A_HOUR,
-  SECONDS_A_MINUTE,
-  SECONDS_A_WEEK,
-} from './constant';
+import { MILLISECONDS_A_SECOND, RSC_REGX, SECONDS_A_MINUTE } from './constant';
 
 export const padStart = (n: string) => n.padStart(2, '0');
 
@@ -60,7 +53,7 @@ export const extract = (date: Date) => {
 };
 
 const $f = ($d: Date, config?: IntlConfig) => {
-  console.log('config :', config);
+  // console.log('config :', config);
   if (!config) return null;
   const { locales, ...options } = config;
   return new Intl.DateTimeFormat(locales, options).format($d);
@@ -204,6 +197,13 @@ export const calculateTime = (
       }
       $d.setMonth(M - item);
       return $d;
+    case 'week':
+      if (o === 'add') {
+        $d.setDate(D + item * 7);
+        return $d;
+      }
+      $d.setDate(D - item * 7);
+      return $d;
     case 'day':
       if (o === 'add') {
         $d.setDate(D + item);
@@ -238,32 +238,44 @@ export const calculateTime = (
 };
 
 export const msStatus = (ms: number): { value: number; unit: RTFU } => {
+  const isN = ms < 0;
   const seconds = Math.abs(ms) / MILLISECONDS_A_SECOND;
   // console.log('seconds :--------------------------');
   // console.log('seconds :', ms);
   // console.log('seconds :--------------------------');
+  // console.log(
+  //   'Math.floor(seconds / SECONDS_A_MINUTE) :',
+  //   Math.floor((seconds - 1) / SECONDS_A_MINUTE)
+  // );
+
+  const minutes = Math.round(seconds / 60);
+  // console.log('minutes :', minutes);
+  const hours = Math.floor(minutes / 60);
+  // console.log('hours :', hours);
+  const days = Math.floor(hours / 24);
+  console.log('days :', days);
+  const weeks = Math.floor(days / 7);
+  // console.log('weeks :', weeks);
+  const months = Math.floor(days / 30);
+  // console.log('months :', months);
+  const years = Math.floor(months / 12);
+  // console.log('years :', years);
+
   const obj: UnitObjType = {
     second: [seconds < 2, 1],
     seconds: [seconds < SECONDS_A_MINUTE, seconds],
-    minute: [seconds === SECONDS_A_MINUTE, 1],
-    minutes: [
-      seconds > SECONDS_A_MINUTE && seconds < SECONDS_A_HOUR,
-      Math.floor(seconds / SECONDS_A_MINUTE),
-    ],
-    hour: [seconds === SECONDS_A_HOUR, 1],
-    hours: [
-      seconds > SECONDS_A_HOUR && seconds < SECONDS_A_DAY,
-      Math.floor(seconds / SECONDS_A_HOUR),
-    ],
-    day: [seconds === SECONDS_A_DAY, 1],
-    days: [
-      seconds > SECONDS_A_DAY && seconds < SECONDS_A_WEEK,
-      Math.floor(seconds / SECONDS_A_DAY),
-    ],
-    week: [seconds === SECONDS_A_WEEK, 1],
-    weeks: [seconds > SECONDS_A_WEEK, Math.floor(seconds / SECONDS_A_WEEK)],
-    // year: false,
-    // month: false,
+    minute: [minutes === 1, 1],
+    minutes: [minutes > 1 && minutes <= 60, isN ? minutes : minutes - 1],
+    hour: [hours === 1, 1],
+    hours: [hours > 1 && hours < 24, isN ? hours : hours - 1],
+    day: [days === 1, 1],
+    days: [days > 1 && days < 7, isN ? days : days - 1],
+    week: [weeks === 1, 1],
+    weeks: [weeks > 1 && weeks <= 4, isN ? weeks : weeks - 1],
+    month: [months === 1, 1],
+    months: [months > 1 && months < 12, isN ? months : months - 1],
+    year: [years === 1, 1],
+    years: [years > 1, isN ? years : years - 1],
     // years: false,
     // quarter: false,
     // quarters: false,
@@ -273,7 +285,7 @@ export const msStatus = (ms: number): { value: number; unit: RTFU } => {
   // console.log('obj :', obj);
   for (const k in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k]?.[0]) {
-      return { value: ms < 0 ? -obj[k][1] : obj[k][1], unit: k as RTFU };
+      return { value: !isN ? -obj[k][1] : obj[k][1], unit: k as RTFU };
     }
   }
   return { value: 0, unit: 'year' };

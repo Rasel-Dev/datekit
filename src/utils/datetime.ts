@@ -5,23 +5,9 @@ import { calculateTime, customFormat, getIso, msStatus } from './util';
 export default class DateTime {
   private $d: Date;
   protected $l?: Date;
-  protected _temp?: Date;
   private _config: Partial<DateConfig> = {};
 
   constructor(date?: Date | string | number, options?: DateTimeOptions) {
-    // if (date) {
-    //   if (date instanceof Date) {
-    //     this.$d = date;
-    //   } else if (typeof date === 'string') {
-    //     this.$d = new Date(date);
-    //   } else if (typeof date === 'number') {
-    //     this.$d = new Date(date);
-    //   } else {
-    //     throw new Error('Given date formate not support!');
-    //   }
-    // } else {
-    //   this.$d = new Date();
-    // }
     if (date) this.$l = new Date();
     this.$d = this._create(date);
     //Config
@@ -50,15 +36,9 @@ export default class DateTime {
     }
   }
 
-  protected _updateState(): Date | undefined {
-    const state = this?._temp;
-    if (state) this._temp = undefined;
-    return state;
-  }
-
   /**
    * Clone the DateTime object
-   * @param withDate Old or New Date object. Otherwise creating new Date object
+   * @param withDate Old or New Date object. Otherwise creating new DateTime object
    * @param withOptions DateTimeOptions
    * @returns The clone of the DateTime object
    */
@@ -66,37 +46,35 @@ export default class DateTime {
     withDate?: Date | string | number,
     withOptions?: DateTimeOptions
   ): DateTime {
-    return new DateTime(withDate, withOptions);
+    return new DateTime(withDate, withOptions || this._config);
   }
 
-  // private getTZoffset(): number {
-  //   return this.$d.getTimezoneOffset();
-  // }
   /**
    * It return String of the date Universal Coordinated Time or UTC format
    * @return String of UTC
    */
-  public toUTC() {
-    return this?._updateState()?.toISOString() || this.$d.toISOString();
+  public utc() {
+    return this.$d.toISOString();
   }
 
   /**
    * It return String of the date International Organization for Standardization (ISO) format
    * @return String of ISO
    */
-  public toISO() {
-    return getIso(this?._updateState() || this.$d);
+  public iso() {
+    return getIso(this.$d);
   }
+
   /**
    * Returns the stored time value in milliseconds since midnight, January 1, 1970 UTC.
    * @return number of milliseconds
    */
   public getTime() {
-    return this?._updateState()?.getTime() || this.$d.getTime();
+    return this.$d.getTime();
   }
 
   public now(f?: string) {
-    return customFormat(this?._updateState() || this?.$d || this?.$l, f, {
+    return customFormat(this?.$d || this?.$l, f, {
       timeZone: this._config.timeZone,
     }).format;
   }
@@ -106,34 +84,42 @@ export default class DateTime {
   }
 
   public status(style: RTFS = 'long'): string {
-    const target =
-      this?._updateState()?.getTime() || (!!this?.$l && this.$d.getTime()) || 0;
+    const target = (!!this?.$l && this.$d.getTime()) || 0;
     const local = this.$l?.getTime() || this.$d.getTime();
     const compareValue = local - target;
     const { value, unit } = msStatus(compareValue);
 
-    const rTimeFormate = new Intl.RelativeTimeFormat(this._config.locale, {
+    const rtf = new Intl.RelativeTimeFormat(this._config.locale, {
       style,
     });
 
-    return target === 0 || compareValue === 0
-      ? 'now'
-      : rTimeFormate.format(value, unit);
+    return target === 0 || compareValue === 0 ? 'now' : rtf.format(value, unit);
   }
-
+  /**
+   * Manipulate the DateTime object
+   * @param item Number of item[s] to addition
+   * @param additionTo year, month, week, day, hour, minute, second
+   * @returns new instance of DateTime object
+   */
   public plus(item: number, additionTo: FormatCalType) {
-    this._temp = calculateTime(this?.$d, item, additionTo);
-    return this;
+    const mDate = calculateTime(this?.$d, item, additionTo);
+    return new DateTime(mDate, this._config);
   }
-
+  /**
+   * Manipulate the DateTime object
+   * @param item Number of item[s] to subtract
+   * @param subtractTo year, month, week, day, hour, minute, second
+   * @returns new instance of DateTime object
+   */
   public minus(item: number, subtractTo: FormatCalType) {
-    this._temp = calculateTime(this?.$d, item, subtractTo, 'sub');
-    return this;
+    const mDate = calculateTime(this?.$d, item, subtractTo, 'sub');
+    return new DateTime(mDate, this._config);
   }
 
   public format(f = 'YYYY-MM-DD hh:mm:ss A') {
-    // console.log('this._config.timeZone :', this._config.timeZone);
-    return customFormat(this?._updateState() || this?.$d || this?.$l, f, {
+    // console.log('this._config :', this._config);
+    return customFormat(this?.$d || this?.$l, f, {
+      locales: this._config.locale,
       timeZone: this._config.timeZone,
     }).format;
   }
