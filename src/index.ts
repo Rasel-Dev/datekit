@@ -1,13 +1,24 @@
 import DateTime from './utils/datetime';
 
-const date = new DateTime('2023-11-13 16:48:00');
+const date = new DateTime('2024-06-28 16:48:00', {
+  timeZone: 'America/Los_Angeles',
+});
+const date1 = date.clone('2023-06-28 16:48:00');
 // console.log(date.format());
 
 // console.log('x - ', date.minus(2, 'minute').format('YY-MMM-DD hh:mm:ss A'));
-console.log('--------------------------------------------');
 // date.status('hours');
-console.log('x - ', date.status('long'));
-// console.log('y - ', date.minus(1, 'hour').format('YY-MMM-DD hh:mm:ss A'));
+// console.log('x - ', date.format('LLLL'));
+// console.log('x - ', date.format('llll'));
+// console.log('y - ', date1.format('YY-MM-DD hh:mm:ss A'));
+// console.log('--------------------------------------------');
+console.log('x - ', date.toISO());
+console.log('x - ', date.toISO());
+console.log('x - ', date.toUTC());
+console.log('y - ', date1.toUTC());
+// console.log('UTC - ', date.toUTC());
+// console.log('y - ', date.minus(1, 'hour').format('YY-MM-DD hh:mm:ss'));
+// console.log('x - ', date.status('long'));
 // console.log('y - ', date.status('hours'));
 // const cal1 = new DateTime('2024-06-28 16:48:00', {
 //   timeZone: 'America/Los_Angeles',

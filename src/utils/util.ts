@@ -8,11 +8,11 @@ import {
 } from '@/types/util';
 import {
   MILLISECONDS_A_SECOND,
+  RSC_REGX,
   SECONDS_A_DAY,
   SECONDS_A_HOUR,
   SECONDS_A_MINUTE,
   SECONDS_A_WEEK,
-  SPLITTER_REGX,
 } from './constant';
 
 export const padStart = (n: string) => n.padStart(2, '0');
@@ -60,21 +60,13 @@ export const extract = (date: Date) => {
 };
 
 const $f = ($d: Date, config?: IntlConfig) => {
+  console.log('config :', config);
   if (!config) return null;
   const { locales, ...options } = config;
   return new Intl.DateTimeFormat(locales, options).format($d);
 };
 
-class Format {
-  constructor(
-    private $d: Date,
-    private tz: string
-  ) {}
-
-  public serialize(format = 'YY-MM-DD hh:mm:ss') {}
-}
-
-export const partTypeOptions = {
+const availableTokens = {
   YYYY: [{ year: 'numeric' }, 'year'],
   YY: [{ year: '2-digit' }, 'year'],
   MMMM: [{ month: 'long' }, 'month'],
@@ -88,43 +80,103 @@ export const partTypeOptions = {
   HH: [{ hour: '2-digit', hour12: false }, 'hour'],
   hh: [{ hour: '2-digit', hour12: true }, 'hour'],
   h: [{ hour: 'numeric' }, 'hour'],
-  mm: [{ minute: 'numeric' }, 'minute'],
+  mm: [{ minute: '2-digit' }, 'minute'],
   m: [{ minute: 'numeric' }, 'minute'],
-  ss: [{ second: 'numeric' }, 'second'],
+  ss: [{ second: '2-digit' }, 'second'],
   s: [{ second: 'numeric' }, 'second'],
-  A: ['', 'meridiem'], // meridiem
+  A: ['AA', 'meridiem'], // meridiem
+  a: ['aa', 'meridiem'], // meridiem
+};
+
+const localizedTokenString = {
+  LT: 'h:mm A',
+  LTS: 'h:mm:ss A',
+  L: 'MM/DD/YYYY',
+  LL: 'MMMM D, YYYY',
+  LLL: 'MMMM D, YYYY h:mm A',
+  LLLL: 'DDDD, MMMM D, YYYY h:mm A',
+  l: 'M/D/YYYY',
+  ll: 'MMM D, YYYY',
+  lll: 'MMM D, YYYY h:mm A',
+  llll: 'DDD, MMM D, YYYY h:mm A',
 };
 
 const manualPadOptions = ['mm', 'ss'];
 
-export const customFormat = (d: Date, f = 'YYYY-MM-DD hh:mm:ss A') => {
+export const customFormat = (
+  d: Date,
+  f = 'YYYY-MM-DD hh:mm:ss A',
+  config?: IntlConfig
+) => {
   const format = f.trim();
-  const formatParts = format.split(SPLITTER_REGX).filter((fp) => !!fp);
-  // console.log('formatParts :', formatParts);
-
+  const formatTokens = format.split(RSC_REGX).filter((fp) => !!fp);
+  // console.log('formatTokens :', formatTokens);
+  const prevFormat = format.replace(/A|a/g, 'AA');
   let output = '';
   let meridiem = '';
   let opts: Record<string, string | FormatExtractorType> = {};
-  formatParts.forEach((p) => {
-    const option = partTypeOptions[p];
-    const part = $f(d, option[0]);
-    if (typeof option[0] === 'object' && part) {
-      if (['hh', 'h'].includes(p)) meridiem = part.split(' ')[1];
-      const others = ['hh', 'h'].includes(p) ? part.split(' ')[0] : part;
-      const withPadValue = manualPadOptions.includes(p)
-        ? padStart(part)
-        : others;
-      opts[option[1]] = withPadValue;
-      output = (output || format).replace(p, withPadValue);
-    } else {
-      // meridiem
-      if (p === 'A') {
-        output = output.replace(p, meridiem);
-        opts[option[1]] = meridiem;
+  formatTokens.forEach((p) => {
+    const availToken = availableTokens?.[p];
+    const locTokFor = localizedTokenString?.[p];
+    // console.log('availToken :', availToken);
+    // normal token
+    if (availToken) {
+      const part = $f(d, { ...availToken[0], ...config });
+      if (typeof availToken[0] === 'object' && part) {
+        if (['hh', 'h'].includes(p)) meridiem = part.split(' ')[1];
+        const othersWithHour = ['hh', 'h'].includes(p)
+          ? part.split(' ')[0]
+          : part;
+        const withPadValue = manualPadOptions.includes(p)
+          ? padStart(part)
+          : othersWithHour;
+        opts[availToken[1]] = withPadValue;
+        output = (output || prevFormat).replace(p, withPadValue);
+      } else {
+        // meridiem
+        if (['A', 'a'].includes(p)) {
+          const md = p === 'a' ? meridiem?.toLowerCase() : meridiem;
+          output = output.replace('AA', md);
+          // console.log('output.replace(p, md) :', output.replace(p, md));
+          opts[availToken[1]] = md;
+        }
       }
     }
+    // local token
+    if (locTokFor) {
+      output = (output || prevFormat).replace(
+        p,
+        customFormat(d, locTokFor, config).format
+      );
+    }
   });
+  // console.log('opts :', opts);
   return { extract: opts, format: output.trim() };
+};
+
+export const isoString = (d: Date, locales: string) => {
+  let configs: Record<string, string> = { timeZone: 'UTC', locales };
+  const format = 'YY M D h m s';
+  format.split(RSC_REGX).forEach((ft) => {
+    const availConfig = availableTokens?.[ft];
+    if (!!ft && typeof availConfig?.[0] === 'object') {
+      configs = { ...configs, ...availConfig[0] };
+    }
+  });
+  // console.log('configs :', configs);
+  return $f(d, configs);
+};
+
+export const getIso = (d: Date) => {
+  return d.toLocaleString('sv-SE', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    timeZone: 'UTC',
+  });
 };
 
 export const calculateTime = (
