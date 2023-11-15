@@ -1,24 +1,31 @@
 import DateTime from './utils/datetime';
 
-const date = new DateTime(undefined, {
+const date = new DateTime('2023-11-18 03:56:16 AM', {
   // locale: 'bn',
   // timeZone: 'America/New_York',
 });
-const date1 = date.clone('2023-11-28 16:48:00');
-console.log(date.format());
+// const date1 = date.clone('2023-11-15 01:00:00');
+// console.log('New Format', date.format('YYYY-MM-DDTHH:mm:ssZ'));
+// console.log(date.utc());
+// console.log(date.tz());
 
 // const manipulate = date.minus(2, 'month');
 
 // console.log('Manipulate - ', manipulate.format());
-console.log('Manipulate - ', date1.status());
+// console.log('Manipulate - ', manipulate.status());
 // date.status('hours');
 // console.log('x - ', date.format('LLLL'));
 // console.log('x - ', date.format('llll'));
 // console.log('y - ', date1.format('YY-MM-DD hh:mm:ss A'));
 // console.log('--------------------------------------------');
 // console.log('x - ', date.iso());
-// console.log('x - ', date.iso());
-// console.log('x - ', date.utc());
+console.log('fmt - ', date.format('lll'));
+// console.log('iso - ', date.tz());
+console.log('iso - ', date.iso());
+console.log('now - ', date.now());
+console.log('Add - now - ', date.plus(1, 'hour').now());
+// console.log('local - ', date.local());
+console.log('utc - ', date.utc());
 // console.log('y - ', date1.utc());
 
 // console.log('UTC - ', date.toUTC());

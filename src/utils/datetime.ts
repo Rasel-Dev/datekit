@@ -1,6 +1,6 @@
 import { DateConfig, DateTimeOptions } from '@/types/datetime';
 import { FormatCalType, RTFS } from '@/types/util';
-import { calculateTime, customFormat, getIso, msStatus } from './util';
+import { calculateTime, customFormat, msStatus, toIso, toUtc } from './util';
 
 export default class DateTime {
   private $d: Date;
@@ -54,7 +54,7 @@ export default class DateTime {
    * @return String of UTC
    */
   public utc() {
-    return this.$d.toISOString();
+    return toUtc(this.$d);
   }
 
   /**
@@ -62,7 +62,7 @@ export default class DateTime {
    * @return String of ISO
    */
   public iso() {
-    return getIso(this.$d);
+    return toIso(this.$d);
   }
 
   /**
@@ -75,12 +75,16 @@ export default class DateTime {
 
   public now(f?: string) {
     return customFormat(this?.$d || this?.$l, f, {
-      timeZone: this._config.timeZone,
+      timeZone: this._config?.timeZone,
     }).format;
   }
 
-  public localTime() {
-    return new Date().toUTCString();
+  public local() {
+    return new Date().toISOString();
+  }
+
+  public tz() {
+    return this._config.timeZone;
   }
 
   public status(style: RTFS = 'long'): string {
@@ -123,4 +127,12 @@ export default class DateTime {
       timeZone: this._config.timeZone,
     }).format;
   }
+
+  // public parse(f = 'YYYY-MM-DD hh:mm:ss A') {
+  //   // console.log('this._config :', this._config);
+  //   return customFormat(this?.$d || this?.$l, f, {
+  //     locales: this._config.locale,
+  //     timeZone: this._config.timeZone,
+  //   }).format;
+  // }
 }
