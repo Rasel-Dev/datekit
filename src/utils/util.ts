@@ -61,7 +61,7 @@ export const extract = (date: Date) => {
   return { $d, Y, M, D, w, h, m, s, ms, tzOffset, z, zz };
 };
 
-const offset = ($d: Date) => {
+export const offset = ($d: Date) => {
   const tzOffset = $d.getTimezoneOffset();
   const tzPos = Math.abs(tzOffset);
   const hOffset = Math.floor(tzPos / 60);

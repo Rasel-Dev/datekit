@@ -1,6 +1,6 @@
 import DateTime from './utils/datetime';
 
-const date = new DateTime('2023-11-18 03:56:16 AM', {
+const date = new DateTime(undefined, {
   // locale: 'bn',
   // timeZone: 'America/New_York',
 });
@@ -19,13 +19,23 @@ const date = new DateTime('2023-11-18 03:56:16 AM', {
 // console.log('y - ', date1.format('YY-MM-DD hh:mm:ss A'));
 // console.log('--------------------------------------------');
 // console.log('x - ', date.iso());
-console.log('fmt - ', date.format('lll'));
-// console.log('iso - ', date.tz());
-console.log('iso - ', date.iso());
-console.log('now - ', date.now());
-console.log('Add - now - ', date.plus(1, 'hour').now());
+// console.log('fmt - ', date.format('lll'));
+// console.log('--------------------------------------------');
+const timez = date.tz('America/New_York');
+// const timez = date.tz('Asia/Dhaka');
+console.log('timez - ', (timez as DateTime)?.tz?.());
+console.log('format - ', (timez as DateTime)?.format?.());
+// console.log('--------------------------------------------');
+// console.log('iso - ', date.iso());
+// console.log('utc - ', date.utc());
+console.log('--------------------------------------------');
+console.log('iso - ', (timez as DateTime)?.iso());
+console.log('utc - ', (timez as DateTime)?.utc());
+console.log('--------------------------------------------');
+// console.log('now - ', date.now());
+// console.log('Add - now - ', date.plus(1, 'hour').now());
 // console.log('local - ', date.local());
-console.log('utc - ', date.utc());
+// console.log('utc - ', date.utc());
 // console.log('y - ', date1.utc());
 
 // console.log('UTC - ', date.toUTC());
@@ -75,3 +85,34 @@ console.log('utc - ', date.utc());
 // });
 
 // console.log(d);
+
+const currentDate = new Date();
+
+// Get local time
+const localTimeString = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/New_York', // You can specify the desired timezone here
+  // timeZone: 'Asia/Dhaka', // You can specify the desired timezone here
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  timeZoneName: 'short',
+}).format(currentDate);
+
+console.log(`Local Time: ${localTimeString}`);
+
+// Get UTC time
+const utcTimeString = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  timeZoneName: 'short',
+}).format(currentDate);
+
+console.log(`UTC Time: ${utcTimeString}`);

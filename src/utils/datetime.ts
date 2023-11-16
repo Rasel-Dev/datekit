@@ -1,6 +1,13 @@
 import { DateConfig, DateTimeOptions } from '@/types/datetime';
 import { FormatCalType, RTFS } from '@/types/util';
-import { calculateTime, customFormat, msStatus, toIso, toUtc } from './util';
+import {
+  calculateTime,
+  customFormat,
+  msStatus,
+  offset,
+  toIso,
+  toUtc,
+} from './util';
 
 export default class DateTime {
   private $d: Date;
@@ -83,8 +90,9 @@ export default class DateTime {
     return new Date().toISOString();
   }
 
-  public tz() {
-    return this._config.timeZone;
+  public tz(timeZone?: string) {
+    if (!timeZone) return this._config?.timeZone || offset(this?.$d).z;
+    return new DateTime(this.$d, { ...this._config, timeZone });
   }
 
   public status(style: RTFS = 'long'): string {
