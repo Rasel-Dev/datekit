@@ -1,5 +1,5 @@
 import { MonthStyleType, WeekStyleType } from '@/types/util';
-import { padStart } from './util';
+import Utils from './util';
 
 export const month = (pos: number, style?: MonthStyleType) => {
   const m =
@@ -13,7 +13,7 @@ export const month = (pos: number, style?: MonthStyleType) => {
     case 'short':
       return m[pos].slice(0, 3);
     case '2-digit':
-      return padStart(String(pos + 1));
+      return Utils.pad(String(pos + 1));
     case 'numeric':
       return String(pos + 1);
 

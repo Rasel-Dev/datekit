@@ -11,11 +11,13 @@ export const MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND;
 
 export const RSC_REGX = /[-_/\s,.TZ:]/g;
 
+export const FMT_REGX = /Y{2,4}|M{1,4}|D{1,4}|H{2}|h{1,2}|m{1,2}|s{1,2}|a|A/g;
+
 export const invalid_token = 'Invalid Format [t]';
 
 export const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
 
-export const availableTokens = {
+export const availableTokens: Record<string, [Object | string, string]> = {
   YYYY: [{ year: 'numeric' }, 'year'],
   YY: [{ year: '2-digit' }, 'year'],
   MMMM: [{ month: 'long' }, 'month'],
@@ -37,7 +39,7 @@ export const availableTokens = {
   a: ['ampm', 'dayPeriod'], // meridiem
 };
 
-export const localizedTokenString = {
+export const localizedTokenString: Record<string, string> = {
   LT: 'h:mm A',
   LTS: 'h:mm:ss A',
   L: 'MM/DD/YYYY',

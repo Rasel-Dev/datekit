@@ -32,4 +32,4 @@ interface IUnitObj {
   1: number;
 }
 type UnitObj = [boolean, number];
-export type UnitObjType = Partial<Record<RTFU, IUnitObj & UnitObj>>;
+export type UnitObjType = Partial<Record<RTFU | string, IUnitObj & UnitObj>>;

@@ -8,8 +8,8 @@ import {
 } from '@/types/util';
 import {
   DEFAULT_FORMAT,
+  FMT_REGX,
   MILLISECONDS_A_SECOND,
-  RSC_REGX,
   SECONDS_A_MINUTE,
   availableTokens,
   invalid_token,
@@ -102,11 +102,11 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
   // console.log(extractUtc(d));
 
   const format = f.trim();
-  const formatTokens = format.split(RSC_REGX).filter((fp) => !!fp);
+  const formatTokens = format.match(FMT_REGX)!;
   // console.log('formatTokens :', formatTokens);
   const prevFormat = format
-    .replace(/A/g, availableTokens?.['A'][0] || 'AA')
-    .replace(/a/g, availableTokens?.['a'][0] || 'AA');
+    .replace(/A/g, availableTokens.A[0] + '' || 'AA')
+    .replace(/a/g, availableTokens?.a[0] + '' || 'AA');
   let output = '';
   // let meridiem = '';
   const components: Intl.DateTimeFormatPart[] = [];
@@ -115,9 +115,17 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
   for (const token of formatTokens) {
     const availToken = availableTokens?.[token];
     const locTokFor = localizedTokenString?.[token];
-    if (!availToken && !locTokFor) {
+    const tokenRx = new RegExp(`${token[0]}+`, 'g');
+    const invalidFormat = formatTokens.find((t) => tokenRx.test(t));
+    if ((!availToken && !locTokFor) || invalidFormat !== token) {
+      const available = Object.keys(availableTokens).filter((t) =>
+        t.match(tokenRx)
+      );
       throw new Error(
-        invalid_token.replace(/\[(.*?)\]/g, format.replace(token, `[${token}]`))
+        invalid_token.replace(
+          /\[(.*?)\]/g,
+          format.replace(token, `[${token}]`)
+        ) + `. You can use ${available.join(' or ')}`
       );
     }
 
@@ -356,7 +364,7 @@ const msStatus = (ms: number, d: Date): { value: number; unit: RTFU } => {
 
   for (const k in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k]?.[0]) {
-      return { value: !isN ? -obj[k][1] : obj[k][1], unit: k as RTFU };
+      return { value: !isN ? -obj[k]![1] : obj[k]![1], unit: k as RTFU };
     }
   }
   return { value: 0, unit: 'years' };
