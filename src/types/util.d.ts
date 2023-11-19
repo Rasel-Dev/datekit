@@ -1,5 +1,5 @@
 export interface IntlConfig extends Intl.DateTimeFormatOptions {
-  locales?: string | string[];
+  locale?: string | string[];
 }
 
 export type MonthStyleType = 'long' | 'short' | 'numeric' | '2-digit';
@@ -14,7 +14,7 @@ export type FormatExtractorType =
   | 'second'
   | 'meridiem';
 
-export type FormatCalType =
+export type UnitType =
   | 'year'
   | 'month'
   | 'week'

@@ -1,33 +1,36 @@
-import { DateConfig, DateTimeOptions } from '@/types/datetime';
-import { FormatCalType, RTFS } from '@/types/util';
+import { DateTimeInput, DateTimeOptions } from '@/types/datetime';
+import { RTFS, UnitType } from '@/types/util';
 import {
-  calculateTime,
-  customFormat,
-  msStatus,
-  offset,
-  toIso,
-  toUtc,
-} from './util';
+  MILLISECONDS_A_DAY,
+  MILLISECONDS_A_HOUR,
+  MILLISECONDS_A_MINUTE,
+  MILLISECONDS_A_SECOND,
+  MILLISECONDS_A_WEEK,
+  UNITS,
+} from './constant';
+import Util from './util';
 
 export default class DateTime {
   private $d: Date;
   protected $l?: Date;
-  private _config: Partial<DateConfig> = {};
+  private _config: Partial<DateTimeOptions> = {};
 
-  constructor(date?: Date | string | number, options?: DateTimeOptions) {
+  constructor(date?: DateTimeInput, options?: DateTimeOptions) {
     if (date) this.$l = new Date();
     this.$d = this._create(date);
     //Config
-    const dateConf = new Intl.DateTimeFormat().resolvedOptions();
-    // console.log('dateConf :', dateConf);
-    const colConf = Intl.Collator().resolvedOptions();
-    //   const colConf1 = Intl.NumberFormat().resolvedOptions();
-    const config = { ...dateConf, ...colConf, ...options };
+    const { locale, calendar } = new Intl.DateTimeFormat().resolvedOptions();
+    const config = {
+      locale,
+      calendar,
+      ...options,
+      offset: Util.offs(this.$d).z,
+    };
     // console.log('config :', config);
-    this._config = config as DateConfig;
+    this._config = config as DateTimeOptions;
   }
 
-  protected _create(date?: Date | string | number): Date {
+  protected _create(date?: DateTimeInput): Date {
     if (date) {
       if (date instanceof Date) {
         return date;
@@ -44,6 +47,16 @@ export default class DateTime {
   }
 
   /**
+   * Get or set timezone. When you set timezone it will return new instance of DateTime object
+   * @param timeZone String of time zone
+   * @returns timezone string | new instance of DateTime class
+   */
+  public tz(timeZone?: string) {
+    if (!timeZone) return this._config?.timeZone || Util.offs(this?.$d).z;
+    return new DateTime(this.$d, { ...this._config, timeZone });
+  }
+
+  /**
    * Clone the DateTime object
    * @param withDate Old or New Date object. Otherwise creating new DateTime object
    * @param withOptions DateTimeOptions
@@ -57,19 +70,22 @@ export default class DateTime {
   }
 
   /**
-   * It return String of the date Universal Coordinated Time or UTC format
+   * It return String of the date Universal Coordinated Time or UTC time
    * @return String of UTC
    */
   public utc() {
-    return toUtc(this.$d);
+    return Util.fmt(this.$d, undefined, {
+      locale: this._config.locale,
+      timeZone: 'UTC',
+    }).format;
   }
 
   /**
-   * It return String of the date International Organization for Standardization (ISO) format
+   * It return String of the date International Organization for Standardization (ISO) time
    * @return String of ISO
    */
   public iso() {
-    return toIso(this.$d);
+    return Util.iso(this.$d);
   }
 
   /**
@@ -79,27 +95,20 @@ export default class DateTime {
   public getTime() {
     return this.$d.getTime();
   }
-
-  public now(f?: string) {
-    return customFormat(this?.$d || this?.$l, f, {
+  /**
+   * This method return current datetime in ISO format
+   */
+  public now() {
+    return Util.fmt(this?.$l || this?.$d, undefined, {
       timeZone: this._config?.timeZone,
     }).format;
-  }
-
-  public local() {
-    return new Date().toISOString();
-  }
-
-  public tz(timeZone?: string) {
-    if (!timeZone) return this._config?.timeZone || offset(this?.$d).z;
-    return new DateTime(this.$d, { ...this._config, timeZone });
   }
 
   public status(style: RTFS = 'long'): string {
     const target = (!!this?.$l && this.$d.getTime()) || 0;
     const local = this.$l?.getTime() || this.$d.getTime();
     const compareValue = local - target;
-    const { value, unit } = msStatus(compareValue);
+    const { value, unit } = Util.status(compareValue, this?.$l || this?.$d);
 
     const rtf = new Intl.RelativeTimeFormat(this._config.locale, {
       style,
@@ -107,31 +116,76 @@ export default class DateTime {
 
     return target === 0 || compareValue === 0 ? 'now' : rtf.format(value, unit);
   }
+
   /**
    * Manipulate the DateTime object
    * @param item Number of item[s] to addition
    * @param additionTo year, month, week, day, hour, minute, second
    * @returns new instance of DateTime object
    */
-  public plus(item: number, additionTo: FormatCalType) {
-    const mDate = calculateTime(this?.$d, item, additionTo);
+  public plus(item: number, additionTo: UnitType) {
+    const mDate = Util.cal(this?.$d, item, additionTo);
     return new DateTime(mDate, this._config);
   }
+
   /**
    * Manipulate the DateTime object
    * @param item Number of item[s] to subtract
    * @param subtractTo year, month, week, day, hour, minute, second
    * @returns new instance of DateTime object
    */
-  public minus(item: number, subtractTo: FormatCalType) {
-    const mDate = calculateTime(this?.$d, item, subtractTo, 'sub');
+  public minus(item: number, subtractTo: UnitType) {
+    const mDate = Util.cal(this?.$d, item, subtractTo, 'sub');
     return new DateTime(mDate, this._config);
   }
 
-  public format(f = 'YYYY-MM-DD hh:mm:ss A') {
-    // console.log('this._config :', this._config);
-    return customFormat(this?.$d || this?.$l, f, {
-      locales: this._config.locale,
+  public diff(item: DateTimeInput, unit?: UnitType, float = false) {
+    const that = new Date(item);
+    const thatTime = that.getTime();
+    const thisTime = this.getTime();
+    const millisecondsDiff = thatTime - thisTime;
+
+    const monthsDiff = () =>
+      (that.getFullYear() - this.$d.getFullYear()) * 12 +
+      (that.getMonth() - this.$d.getMonth());
+
+    let res: number;
+    switch (unit) {
+      case UNITS.y:
+        res = monthsDiff() / 12;
+        break;
+      // case UNITS.q:
+      //   res = 0;
+      //   break;
+      case UNITS.M:
+        res = monthsDiff();
+        break;
+      case UNITS.w:
+        res = millisecondsDiff / MILLISECONDS_A_WEEK;
+        break;
+      case UNITS.d:
+        res = millisecondsDiff / MILLISECONDS_A_DAY;
+        break;
+      case UNITS.h:
+        res = millisecondsDiff / MILLISECONDS_A_HOUR;
+        break;
+      case UNITS.m:
+        res = millisecondsDiff / MILLISECONDS_A_MINUTE;
+        break;
+      case UNITS.s:
+        res = millisecondsDiff / MILLISECONDS_A_SECOND;
+        break;
+      default:
+        res = millisecondsDiff;
+        break;
+    }
+
+    return !float ? Math.floor(res) : +res.toFixed(3);
+  }
+
+  public format(f?: string) {
+    return Util.fmt(this.$d, f, {
+      locale: this._config.locale,
       timeZone: this._config.timeZone,
     }).format;
   }

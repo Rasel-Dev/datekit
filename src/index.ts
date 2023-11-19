@@ -1,9 +1,9 @@
 import DateTime from './utils/datetime';
 
-const date = new DateTime(undefined, {
-  // locale: 'bn',
-  // timeZone: 'America/New_York',
-});
+// const date = new DateTime(undefined, {
+//   // locale: 'bn',
+//   // timeZone: 'America/New_York',
+// });
 // const date1 = date.clone('2023-11-15 01:00:00');
 // console.log('New Format', date.format('YYYY-MM-DDTHH:mm:ssZ'));
 // console.log(date.utc());
@@ -21,17 +21,18 @@ const date = new DateTime(undefined, {
 // console.log('x - ', date.iso());
 // console.log('fmt - ', date.format('lll'));
 // console.log('--------------------------------------------');
-const timez = date.tz('America/New_York');
-// const timez = date.tz('Asia/Dhaka');
-console.log('timez - ', (timez as DateTime)?.tz?.());
-console.log('format - ', (timez as DateTime)?.format?.());
+// const timez = date.tz('America/New_York');
+// // const timez = date.tz('Asia/Dhaka');
+// console.log('timez - ', (timez as DateTime)?.tz?.());
+// console.log('format - ', (timez as DateTime)?.format?.());
 // console.log('--------------------------------------------');
 // console.log('iso - ', date.iso());
 // console.log('utc - ', date.utc());
-console.log('--------------------------------------------');
-console.log('iso - ', (timez as DateTime)?.iso());
-console.log('utc - ', (timez as DateTime)?.utc());
-console.log('--------------------------------------------');
+// console.log('--------------------------------------------');
+// console.log('iso - ', (timez as DateTime)?.iso());
+// console.log('iso - ', (timez as DateTime)?.status());
+// console.log('utc - ', (timez as DateTime)?.utc());
+// console.log('--------------------------------------------');
 // console.log('now - ', date.now());
 // console.log('Add - now - ', date.plus(1, 'hour').now());
 // console.log('local - ', date.local());
@@ -87,11 +88,12 @@ console.log('--------------------------------------------');
 // console.log(d);
 
 const currentDate = new Date();
+const tampus = new DateTime('2023-11-19T13:20:39Z', { timeZone: 'UTC' });
 
 // Get local time
-const localTimeString = new Intl.DateTimeFormat('en-US', {
-  timeZone: 'America/New_York', // You can specify the desired timezone here
-  // timeZone: 'Asia/Dhaka', // You can specify the desired timezone here
+const localTimeString = new Intl.DateTimeFormat([], {
+  // timeZone: 'America/New_York', // You can specify the desired timezone here
+  timeZone: 'Asia/Dhaka', // You can specify the desired timezone here
   year: 'numeric',
   month: 'numeric',
   day: 'numeric',
@@ -101,10 +103,12 @@ const localTimeString = new Intl.DateTimeFormat('en-US', {
   timeZoneName: 'short',
 }).format(currentDate);
 
-console.log(`Local Time: ${localTimeString}`);
+// console.log(`Local Time: ${localTimeString}`);
+// console.log('Local format: ', tampus.format());
+// console.log('Local iso: ', tampus.iso());
 
 // Get UTC time
-const utcTimeString = new Intl.DateTimeFormat('en-US', {
+const utcTimeString = new Intl.DateTimeFormat([], {
   timeZone: 'UTC',
   year: 'numeric',
   month: 'numeric',
@@ -115,4 +119,18 @@ const utcTimeString = new Intl.DateTimeFormat('en-US', {
   timeZoneName: 'short',
 }).format(currentDate);
 
-console.log(`UTC Time: ${utcTimeString}`);
+// console.log(`--------------------------------`);
+// console.log(`UTC Time: ${utcTimeString}`);
+// console.log('NOW Time: ', tampus.now());
+// console.log('UTC Time: ', tampus.utc());
+
+console.log(`--------------------------------`);
+// console.log(`UTC Time: ${utcTimeString}`);
+console.log('UTC Time: ', tampus.utc());
+console.log(`--------------------------------`);
+console.log('NOW Time: ', tampus.now());
+console.log('Locl fmt: ', tampus.format());
+console.log('Locl iso: ', tampus.iso());
+console.log(`--------------------------------`);
+console.log('Locl dif: ', tampus.diff('2020-11-19 12:07:00', 'month', true));
+console.log(`--------------------------------`);

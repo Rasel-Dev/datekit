@@ -13,6 +13,8 @@ export const RSC_REGX = /[-_/\s,.TZ:]/g;
 
 export const invalid_token = 'Invalid Format [t]';
 
+export const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
+
 export const availableTokens = {
   YYYY: [{ year: 'numeric' }, 'year'],
   YY: [{ year: '2-digit' }, 'year'],
@@ -49,3 +51,14 @@ export const localizedTokenString = {
 };
 
 export const manualPadOptions = ['mm', 'ss'];
+
+export const UNITS = {
+  y: 'year',
+  q: 'quarter',
+  M: 'month',
+  w: 'week',
+  d: 'day',
+  h: 'hour',
+  m: 'minute',
+  s: 'second',
+};

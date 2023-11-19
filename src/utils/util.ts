@@ -1,12 +1,13 @@
 import {
-  FormatCalType,
   FormatExtractorType,
   IntlConfig,
   OpType,
   RTFU,
   UnitObjType,
+  UnitType,
 } from '@/types/util';
 import {
+  DEFAULT_FORMAT,
   MILLISECONDS_A_SECOND,
   RSC_REGX,
   SECONDS_A_MINUTE,
@@ -16,29 +17,29 @@ import {
   manualPadOptions,
 } from './constant';
 
-export const padStart = (n?: string) => String(n).padStart(2, '0');
+const padStart = (n?: string) => String(n).padStart(2, '0');
 
-export const isLeapYear = (year: number) => {
+const isLeapYear = (year: number) => {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 };
 
-export const daysInYear = (year: number) => {
+const daysInYear = (year: number) => {
   return isLeapYear(year) ? 366 : 365;
 };
 
-export const daysInMonth = (year: number, month: number) => {
+const daysInMonth = (year: number, monthIdx: number) => {
   const leapDay = isLeapYear(year) ? 29 : 28;
-  return [31, leapDay, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+  return [31, leapDay, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthIdx];
 };
 
-export const weekStartDate = ($d: Date) => {
+const weekStartDate = ($d: Date) => {
   const clone = new Date($d);
   const dayAt = clone.getDay();
   const diff = (dayAt + 6) % 7;
   return new Date(clone.setDate(clone.getDate() - diff));
 };
 
-export const extract = (date: Date) => {
+const extract = (date: Date) => {
   const $d = new Date(date);
   // Get the individual date and time components.
   const Y = $d.getFullYear();
@@ -49,6 +50,10 @@ export const extract = (date: Date) => {
   const m = $d.getMinutes();
   const s = $d.getSeconds();
   const ms = $d.getMilliseconds();
+  return { $d, Y, M, D, w, h, m, s, ms };
+};
+
+const offset = ($d: Date) => {
   const tzOffset = $d.getTimezoneOffset();
   const tzPos = Math.abs(tzOffset);
   const hOffset = Math.floor(tzPos / 60);
@@ -58,25 +63,13 @@ export const extract = (date: Date) => {
   // console.log('z :', z);
   const zz = `${sign}${padStart(hOffset + '')}${padStart(mOffset + '')}`;
   // console.log('zz :', zz);
-  return { $d, Y, M, D, w, h, m, s, ms, tzOffset, z, zz };
+  return { z, zz, offset: tzOffset };
 };
 
-export const offset = ($d: Date) => {
-  const tzOffset = $d.getTimezoneOffset();
-  const tzPos = Math.abs(tzOffset);
-  const hOffset = Math.floor(tzPos / 60);
-  const mOffset = tzPos % 60;
-  const sign = tzOffset < 0 ? '+' : '-';
-  const z = `${sign}${padStart(hOffset + '')}:${padStart(mOffset + '')}`;
-  // console.log('z :', z);
-  const zz = `${sign}${padStart(hOffset + '')}${padStart(mOffset + '')}`;
-  // console.log('zz :', zz);
-  return { z, zz };
-};
-
-export const extractUtc = (date: Date) => {
+const extractUtc = (date: Date) => {
   const $d = new Date(date);
   const { z, zz } = offset($d);
+  // console.log('offset($d) :', offset($d));
   // extract($d);
   // Get the individual date and time components of UTC.
   const Y = $d.getUTCFullYear();
@@ -93,29 +86,21 @@ export const extractUtc = (date: Date) => {
 const $f = ($d: Date, config?: IntlConfig) => {
   // console.log('config :', config);
   if (!config) return null;
-  const { locales, ...options } = config;
-  return new Intl.DateTimeFormat(locales, options).formatToParts($d);
+  const { locale, ...options } = config;
+  return new Intl.DateTimeFormat(locale, options).formatToParts($d);
 };
 
-export const toIso = (d: Date) => {
-  const { Y, M, D, H, m, s } = extractUtc(d);
+const toIso = (d: Date) => {
+  const { Y, M, D, h, m, s } = extract(d);
+  // console.log('extract(d) :', extract(d));
   return `${Y}-${padStart(M + '')}-${padStart(D + '')}T${padStart(
-    H + ''
+    h + ''
   )}:${padStart(m + '')}:${padStart(s + '')}Z`;
 };
 
-export const toUtc = (d: Date) => {
-  const { Y, M, D, H, m, s, z } = extractUtc(d);
-  return `${Y}-${padStart(M + '')}-${padStart(D + '')}T${padStart(
-    H + ''
-  )}:${padStart(m + '')}:${padStart(s + '')}${z}`;
-};
+const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
+  // console.log(extractUtc(d));
 
-export const customFormat = (
-  d: Date,
-  f = 'YYYY-MM-DD hh:mm:ss A',
-  config?: IntlConfig
-) => {
   const format = f.trim();
   const formatTokens = format.split(RSC_REGX).filter((fp) => !!fp);
   // console.log('formatTokens :', formatTokens);
@@ -269,10 +254,10 @@ export const customFormat = (
   return { extract: opts, format: output.trim() };
 };
 
-export const calculateTime = (
+const calculateTime = (
   d: Date,
   item: number,
-  partTo: FormatCalType,
+  partTo: UnitType,
   o: OpType = 'add'
 ) => {
   if (isNaN(item)) throw new Error('Item should be a number');
@@ -334,36 +319,25 @@ export const calculateTime = (
   }
 };
 
-export const msStatus = (ms: number): { value: number; unit: RTFU } => {
+const msStatus = (ms: number, d: Date): { value: number; unit: RTFU } => {
   const f = Math.floor,
     r = Math.round,
     a = Math.abs;
   const isN = ms < 0;
+  const floor = isN ? f : r;
+  const round = isN ? r : f;
   const seconds = a(ms) / MILLISECONDS_A_SECOND;
-  // console.log('seconds :--------------------------');
-  // console.log('seconds :', ms);
-  // console.log('seconds :--------------------------');
-  // console.log(
-  //   'Math.floor(seconds / SECONDS_A_MINUTE) :',
-  //   Math.floor((seconds - 1) / SECONDS_A_MINUTE)
-  // );
 
-  const minutes = (isN ? f : r)(seconds / 60);
-  // console.log('minutes :', minutes);
-  const hours = (isN ? r : f)(minutes / 60);
-  // console.log('hours :', hours, minutes / 60);
-  const days = (isN ? f : r)(hours / 24);
-  // console.log('days :', days);
-  const weeks = (isN ? f : r)(days / 7);
-  // console.log('weeks :', weeks);
-  const months = (isN ? f : r)(days / 30);
-  // console.log('months :', months);
-  const years = (isN ? f : r)(months / 12);
-  // console.log('years :', years);
+  const minutes = floor(seconds / 60);
+  const hours = round(minutes / 60);
+  const days = floor(hours / 24);
+  const weeks = floor(days / 7);
+  const months = floor(days / daysInMonth(d.getFullYear(), d.getMonth()));
+  const years = floor(months / 12);
 
   const obj: UnitObjType = {
     second: [seconds < 2, 1],
-    seconds: [seconds < SECONDS_A_MINUTE, (isN ? f : r)(seconds)],
+    seconds: [seconds < SECONDS_A_MINUTE, floor(seconds)],
     minute: [minutes === 1, 1],
     minutes: [minutes > 1 && minutes <= 60, isN ? minutes : minutes],
     hour: [hours === 1, 1],
@@ -380,12 +354,28 @@ export const msStatus = (ms: number): { value: number; unit: RTFU } => {
     years: [years > 1, isN ? years : years],
   };
 
-  // console.log('obj :', obj);
-
   for (const k in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k]?.[0]) {
       return { value: !isN ? -obj[k][1] : obj[k][1], unit: k as RTFU };
     }
   }
-  return { value: 0, unit: 'year' };
+  return { value: 0, unit: 'years' };
 };
+
+export default {
+  offs: offset,
+  ext: extract,
+  extu: extractUtc,
+  iso: toIso,
+  fmt: customFormat,
+  cal: calculateTime,
+  status: msStatus,
+  pad: padStart,
+};
+
+// export const calculateReversed = (end: number, start: number): number => {
+//   // Reversed the calculation
+//   if (start > end) return -calculateReversed(start, end);
+//   const msDiff = end - start;
+//   return msDiff;
+// };
