@@ -9,9 +9,10 @@ export const MILLISECONDS_A_HOUR = SECONDS_A_HOUR * MILLISECONDS_A_SECOND
 export const MILLISECONDS_A_DAY = SECONDS_A_DAY * MILLISECONDS_A_SECOND
 export const MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND
 
-export const RSC_REGX = /[-_/\s,.TZ:]/g
+export const RSC_REGX = /[-_/\s,.:]/g
 
 export const FMT_REGX = /Y{2,4}|M{1,4}|D{1,4}|H{2}|h{1,2}|m{1,2}|s{1,2}|a|A/g
+export const L_FMT_REGX = /LT+S?|L{1,4}|l{1,4}/g
 
 export const invalid_token = 'Invalid Format [t]'
 
