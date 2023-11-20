@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>DateTime Local</h2>
+    <h2 id="show"></h2>
+    <br />
+    <input type="datetime-local" name="dt" id="dt" onchange="dateInput()" />
+
+    <script src="../dist/bundle.js"></script>
+    <script>
+      // Wait for the script to be fully loaded
+      // window.addEventListener('DOMContentLoaded', () => {
+      // Access the default export from the module
+      function dateInput() {
+        const dt = document.getElementById('dt')
+        const myDateTime = new DateTime.default(dt.value)
+        console.log(dt.value)
+        console.log(myDateTime.utc())
+        console.log(myDateTime.now())
+        console.log(myDateTime.format())
+      }
+      // })
+    </script>
+  </body>
+</html>

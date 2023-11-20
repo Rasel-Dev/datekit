@@ -5,7 +5,7 @@ import {
   RTFU,
   UnitObjType,
   UnitType,
-} from '@/types/util';
+} from '../types/util';
 import {
   DEFAULT_FORMAT,
   FMT_REGX,
@@ -17,7 +17,7 @@ import {
   manualPadOptions,
 } from './constant';
 
-const padStart = (n?: string) => String(n).padStart(2, '0');
+const padStart = (n?: string) => String(n)?.padStart(2, '0');
 
 const isLeapYear = (year: number) => {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);

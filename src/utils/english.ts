@@ -1,4 +1,4 @@
-import { MonthStyleType, WeekStyleType } from '@/types/util';
+import { MonthStyleType, WeekStyleType } from '../types/util';
 import Utils from './util';
 
 export const month = (pos: number, style?: MonthStyleType) => {

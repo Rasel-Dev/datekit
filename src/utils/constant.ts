@@ -1,21 +1,21 @@
-export const SECONDS_A_MINUTE = 60;
-export const SECONDS_A_HOUR = SECONDS_A_MINUTE * 60;
-export const SECONDS_A_DAY = SECONDS_A_HOUR * 24;
-export const SECONDS_A_WEEK = SECONDS_A_DAY * 7;
+export const SECONDS_A_MINUTE = 60
+export const SECONDS_A_HOUR = SECONDS_A_MINUTE * 60
+export const SECONDS_A_DAY = SECONDS_A_HOUR * 24
+export const SECONDS_A_WEEK = SECONDS_A_DAY * 7
 
-export const MILLISECONDS_A_SECOND = 1e3;
-export const MILLISECONDS_A_MINUTE = SECONDS_A_MINUTE * MILLISECONDS_A_SECOND;
-export const MILLISECONDS_A_HOUR = SECONDS_A_HOUR * MILLISECONDS_A_SECOND;
-export const MILLISECONDS_A_DAY = SECONDS_A_DAY * MILLISECONDS_A_SECOND;
-export const MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND;
+export const MILLISECONDS_A_SECOND = 1e3
+export const MILLISECONDS_A_MINUTE = SECONDS_A_MINUTE * MILLISECONDS_A_SECOND
+export const MILLISECONDS_A_HOUR = SECONDS_A_HOUR * MILLISECONDS_A_SECOND
+export const MILLISECONDS_A_DAY = SECONDS_A_DAY * MILLISECONDS_A_SECOND
+export const MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND
 
-export const RSC_REGX = /[-_/\s,.TZ:]/g;
+export const RSC_REGX = /[-_/\s,.TZ:]/g
 
-export const FMT_REGX = /Y{2,4}|M{1,4}|D{1,4}|H{2}|h{1,2}|m{1,2}|s{1,2}|a|A/g;
+export const FMT_REGX = /Y{2,4}|M{1,4}|D{1,4}|H{2}|h{1,2}|m{1,2}|s{1,2}|a|A/g
 
-export const invalid_token = 'Invalid Format [t]';
+export const invalid_token = 'Invalid Format [t]'
 
-export const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
+export const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ss'
 
 export const availableTokens: Record<string, [Object | string, string]> = {
   YYYY: [{ year: 'numeric' }, 'year'],
@@ -37,7 +37,7 @@ export const availableTokens: Record<string, [Object | string, string]> = {
   s: [{ second: 'numeric' }, 'second'],
   A: ['AMPM', 'dayPeriod'], // meridiem
   a: ['ampm', 'dayPeriod'], // meridiem
-};
+}
 
 export const localizedTokenString: Record<string, string> = {
   LT: 'h:mm A',
@@ -50,9 +50,9 @@ export const localizedTokenString: Record<string, string> = {
   ll: 'MMM D, YYYY',
   lll: 'MMM D, YYYY h:mm A',
   llll: 'DDD, MMM D, YYYY h:mm A',
-};
+}
 
-export const manualPadOptions = ['mm', 'ss'];
+export const manualPadOptions = ['mm', 'ss']
 
 export const UNITS = {
   y: 'year',
@@ -63,4 +63,4 @@ export const UNITS = {
   h: 'hour',
   m: 'minute',
   s: 'second',
-};
+}

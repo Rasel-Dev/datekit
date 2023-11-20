@@ -1,136 +1,208 @@
-import DateTime from './utils/datetime';
+import DateTime from './utils/datetime'
+export default DateTime
+// import { DateTimeInput, DateTimeOptions } from './types/datetime'
+// import { RTFS, UnitType } from './types/util'
+// import * as C from './utils/constant'
+// import Util from './utils/util'
 
-// const date = new DateTime(undefined, {
-//   // locale: 'bn',
-//   // timeZone: 'America/New_York',
-// });
-// const date1 = date.clone('2023-11-15 01:00:00');
-// console.log('New Format', date.format('YYYY-MM-DDTHH:mm:ssZ'));
-// console.log(date.utc());
-// console.log(date.tz());
+// export default class DateTime {
+//   private $d: Date
+//   protected $l?: Date
+//   private _config: Partial<DateTimeOptions> = {}
 
-// const manipulate = date.minus(2, 'month');
+//   constructor(date?: DateTimeInput, options?: DateTimeOptions) {
+//     if (date) this.$l = new Date()
+//     this.$d = this._create(date)
+//     //Config
+//     const { locale, calendar } = new Intl.DateTimeFormat().resolvedOptions()
+//     const config = {
+//       locale,
+//       calendar,
+//       ...options,
+//       offset: Util.offs(this.$d).z,
+//     }
+//     // console.log('config :', config);
+//     this._config = config as DateTimeOptions
+//   }
 
-// console.log('Manipulate - ', manipulate.format());
-// console.log('Manipulate - ', manipulate.status());
-// date.status('hours');
-// console.log('x - ', date.format('LLLL'));
-// console.log('x - ', date.format('llll'));
-// console.log('y - ', date1.format('YY-MM-DD hh:mm:ss A'));
-// console.log('--------------------------------------------');
-// console.log('x - ', date.iso());
-// console.log('fmt - ', date.format('lll'));
-// console.log('--------------------------------------------');
-// const timez = date.tz('America/New_York');
-// // const timez = date.tz('Asia/Dhaka');
-// console.log('timez - ', (timez as DateTime)?.tz?.());
-// console.log('format - ', (timez as DateTime)?.format?.());
-// console.log('--------------------------------------------');
-// console.log('iso - ', date.iso());
-// console.log('utc - ', date.utc());
-// console.log('--------------------------------------------');
-// console.log('iso - ', (timez as DateTime)?.iso());
-// console.log('iso - ', (timez as DateTime)?.status());
-// console.log('utc - ', (timez as DateTime)?.utc());
-// console.log('--------------------------------------------');
-// console.log('now - ', date.now());
-// console.log('Add - now - ', date.plus(1, 'hour').now());
-// console.log('local - ', date.local());
-// console.log('utc - ', date.utc());
-// console.log('y - ', date1.utc());
+//   protected _create(date?: DateTimeInput): Date {
+//     if (date) {
+//       if (date instanceof Date) {
+//         return date
+//       } else if (typeof date === 'string') {
+//         return new Date(date)
+//       } else if (typeof date === 'number') {
+//         return new Date(date)
+//       } else {
+//         throw new Error('Given date formate not support!')
+//       }
+//     } else {
+//       return new Date()
+//     }
+//   }
 
-// console.log('UTC - ', date.toUTC());
-// console.log('y - ', date.minus(1, 'hour').format('YY-MM-DD hh:mm:ss'));
-// console.log('x - ', date.status('long'));
-// console.log('y - ', date.status('hours'));
-// const cal1 = new DateTime('2024-06-28 16:48:00', {
-//   timeZone: 'America/Los_Angeles',
-// });
+//   /**
+//    * Get or set timezone. When you set timezone it will return new instance of DateTime object
+//    * @param timeZone String of time zone
+//    * @returns timezone string | new instance of DateTime class
+//    */
+//   public tz(timeZone?: string) {
+//     if (!timeZone) return this._config?.timeZone || Util.offs(this?.$d).z
+//     return new DateTime(this.$d, { ...this._config, timeZone })
+//   }
 
-// console.log('--------------------------------------------');
-// console.log('|     ', date.toUTC(), '      |');
-// console.log('--------------------------------------------');
-// console.log('|       ', date.toISO(), '         |');
-// console.log('--------------------------------------------');
+//   /**
+//    * Clone the DateTime object
+//    * @param withDate Old or New Date object. Otherwise creating new DateTime object
+//    * @param withOptions DateTimeOptions
+//    * @returns The clone of the DateTime object
+//    */
+//   public clone(
+//     withDate?: Date | string | number,
+//     withOptions?: DateTimeOptions
+//   ): DateTime {
+//     return new DateTime(withDate, withOptions || this._config)
+//   }
 
-// const space = Array(10).fill(' ');
-// console.log(space.join(''), 'Hello World');
-// const example = new Date('2023-11-11 16:08:03');
-// const { w, h } = extract(example);
-// console.log('extract(example) :', extract(example));
+//   /**
+//    * It return String of the date Universal Coordinated Time or UTC time
+//    * @return String of UTC
+//    */
+//   public utc() {
+//     return Util.fmt(this.$d, undefined, {
+//       locale: this._config.locale,
+//       timeZone: 'UTC',
+//     }).format
+//   }
 
-// console.log(weekend(w, 'long'));
-// console.log(customFormat(example).format);
+//   /**
+//    * It return String of the date International Organization for Standardization (ISO) time
+//    * @return String of ISO
+//    */
+//   public iso() {
+//     return Util.iso(this.$d)
+//   }
 
-// console.log(customFormat(calculateTime(example, 9, 'hour')).format);
+//   /**
+//    * Returns the stored time value in milliseconds since midnight, January 1, 1970 UTC.
+//    * @return number of milliseconds
+//    */
+//   public getTime() {
+//     return this.$d.getTime()
+//   }
+//   /**
+//    * This method return current datetime in ISO format
+//    */
+//   public now() {
+//     return Util.fmt(this?.$l || this?.$d, undefined, {
+//       timeZone: this._config?.timeZone,
+//     }).format
+//   }
 
-// format('YY-MM-DD hh:mm:ss A');
+//   public status(style: RTFS = 'long'): string {
+//     const target = (!!this?.$l && this.$d.getTime()) || 0
+//     const local = this.$l?.getTime() || this.$d.getTime()
+//     const compareValue = local - target
+//     const { value, unit } = Util.status(compareValue, this?.$l || this?.$d)
 
-//
+//     const rtf = new Intl.RelativeTimeFormat(this._config.locale, {
+//       style,
+//     })
 
-// const dateTimeFormat = new Intl.DateTimeFormat('en-US', {
-//   year: 'numeric',
-//   month: 'long',
-//   day: 'numeric',
-// });
+//     return target === 0 || compareValue === 0 ? 'now' : rtf.format(value, unit)
+//   }
 
-// const options = dateTimeFormat.resolvedOptions();
+//   /**
+//    * Manipulate the DateTime object
+//    * @param item Number of item[s] to addition
+//    * @param additionTo year, month, week, day, hour, minute, second
+//    * @returns new instance of DateTime object
+//    */
+//   public plus(item: number, additionTo: UnitType) {
+//     const mDate = Util.cal(this?.$d, item, additionTo)
+//     return new DateTime(mDate, this._config)
+//   }
 
-// const { locale, ...others } = options;
+//   /**
+//    * Manipulate the DateTime object
+//    * @param item Number of item[s] to subtract
+//    * @param subtractTo year, month, week, day, hour, minute, second
+//    * @returns new instance of DateTime object
+//    */
+//   public minus(item: number, subtractTo: UnitType) {
+//     const mDate = Util.cal(this?.$d, item, subtractTo, 'sub')
+//     return new DateTime(mDate, this._config)
+//   }
 
-// const d = new Date().toLocaleString(options.locale, {
-//   timeZone: 'America/Los_Angeles',
-//   //   dateStyle: 'full', // Wednesday, November 8, 2023 [ but "Can't set option dayPeriod when dateStyle is used" ]
-//   //   dayPeriod: 'short', // in the afternoon
-//   day: 'numeric',
-// });
+//   public diff(item: DateTimeInput, unit?: UnitType, float = false) {
+//     const that = new Date(item)
+//     const thatTime = that.getTime()
+//     const thisTime = this.getTime()
+//     const millisecondsDiff = thatTime - thisTime
 
-// console.log(d);
+//     const monthsDiff = () =>
+//       (that.getFullYear() - this.$d.getFullYear()) * 12 +
+//       (that.getMonth() - this.$d.getMonth())
 
-const currentDate = new Date();
-const tampus = new DateTime('2023-11-19T13:20:39Z', { timeZone: 'UTC' });
+//     let res: number
+//     switch (unit) {
+//       case C.UNITS.y:
+//         res = monthsDiff() / 12
+//         break
+//       // case UNITSq:
+//       //   res = 0;
+//       //   break;
+//       case C.UNITS.M:
+//         res = monthsDiff()
+//         break
+//       case C.UNITS.w:
+//         res = millisecondsDiff / C.MILLISECONDS_A_WEEK
+//         break
+//       case C.UNITS.d:
+//         res = millisecondsDiff / C.MILLISECONDS_A_DAY
+//         break
+//       case C.UNITS.h:
+//         res = millisecondsDiff / C.MILLISECONDS_A_HOUR
+//         break
+//       case C.UNITS.m:
+//         res = millisecondsDiff / C.MILLISECONDS_A_MINUTE
+//         break
+//       case C.UNITS.s:
+//         res = millisecondsDiff / C.MILLISECONDS_A_SECOND
+//         break
+//       default:
+//         res = millisecondsDiff
+//         break
+//     }
 
-// Get local time
-const localTimeString = new Intl.DateTimeFormat([], {
-  // timeZone: 'America/New_York', // You can specify the desired timezone here
-  timeZone: 'Asia/Dhaka', // You can specify the desired timezone here
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-  timeZoneName: 'short',
-}).format(currentDate);
+//     return !float ? Math.floor(res) : +res.toFixed(3)
+//   }
 
-// console.log(`Local Time: ${localTimeString}`);
-// console.log('Local format: ', tampus.format());
-// console.log('Local iso: ', tampus.iso());
+//   public format(f?: string) {
+//     return Util.fmt(this.$d, f, {
+//       locale: this._config.locale,
+//       timeZone: this._config.timeZone,
+//     }).format
+//   }
 
-// Get UTC time
-const utcTimeString = new Intl.DateTimeFormat([], {
-  timeZone: 'UTC',
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-  timeZoneName: 'short',
-}).format(currentDate);
+//   // public parse(f = 'YYYY-MM-DD hh:mm:ss A') {
+//   //   // console.log('this._config :', this._config);
+//   //   return customFormat(this?.$d || this?.$l, f, {
+//   //     locales: this._config.locale,
+//   //     timeZone: this._config.timeZone,
+//   //   }).format;
+//   // }
+// }
+
+// const tampus = new DateTime();
 
 // console.log(`--------------------------------`);
-// console.log(`UTC Time: ${utcTimeString}`);
-// console.log('NOW Time: ', tampus.now());
+// // console.log(`UTC Time: ${utcTimeString}`);
 // console.log('UTC Time: ', tampus.utc());
-
-console.log(`--------------------------------`);
-// console.log(`UTC Time: ${utcTimeString}`);
-console.log('UTC Time: ', tampus.utc());
-console.log(`--------------------------------`);
-console.log('NOW Time: ', tampus.now());
-console.log('Locl fmt: ', tampus.format());
-console.log('Locl iso: ', tampus.iso());
-console.log(`--------------------------------`);
-console.log('Locl dif: ', tampus.diff('2020-11-19 12:07:00', 'month', true));
-console.log(`--------------------------------`);
+// console.log(`--------------------------------`);
+// console.log('NOW Time: ', tampus.now());
+// console.log('Locl fmt: ', tampus.format());
+// console.log('Locl iso: ', tampus.iso());
+// console.log(`--------------------------------`);
+// console.log('Locl dif: ', tampus.diff('2020-11-19 12:07:00', 'month', true));
+// console.log(`--------------------------------`);
