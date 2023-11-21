@@ -23,11 +23,12 @@ export default class DateKit {
     const config = {
       locale,
       calendar,
-      ...options,
       offset: Util.offs(this.$d).z,
     }
     // console.log('config :', config);
-    this._config = config as DateKitOptions
+    this._config = !options
+      ? config
+      : ({ ...config, ...options } as DateKitOptions)
   }
 
   protected _create(date?: DateKitInput): Date {
@@ -182,6 +183,7 @@ export default class DateKit {
 
     return !float ? Math.floor(res) : +res.toFixed(3)
   }
+
   /**
    * This method returns formatted string, you can customize formatting and play with datetime. Returns ISO formatted otherwise.
    * @param {string} f Format string

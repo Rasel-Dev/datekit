@@ -85,9 +85,10 @@ const extractUtc = (date: Date) => {
 }
 
 const $f = ($d: Date, config?: IntlConfig) => {
-  // console.log('config :', config);
+  // console.log('config :', config)
   if (!config) return null
   const { locale, ...options } = config
+  // console.log('locale, options :', locale, options)
   return new Intl.DateTimeFormat(locale, options).formatToParts($d)
 }
 
@@ -100,6 +101,7 @@ const toIso = (d: Date) => {
 }
 
 const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
+  // console.log('d: Date, f = DEFAULT_FORMAT, config :', d, f, config)
   // console.log(extractUtc(d));
 
   const format = f.trim()
@@ -134,7 +136,10 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
         const cfg = availToken[0]
         const type = availToken[1] + ''
         output = output.replace(token, type)
-        const part = typeof cfg === 'object' ? $f(d, { ...cfg, ...config }) : []
+        const part =
+          typeof cfg === 'object'
+            ? $f(d, !config ? cfg : { ...cfg, ...config })
+            : []
         // console.log('part :', token, part);
         const fp = part?.find((cycle) => cycle.type === type)
         // console.log('fp :', fp);

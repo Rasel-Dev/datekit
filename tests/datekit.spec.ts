@@ -1,42 +1,41 @@
-import DateKit from '../src/index'
+import datekit from '../src/index'
+import DateKit from '../src/utils/datekit'
 
 describe('Type Check', () => {
-  const dateKit = new DateKit()
   it('should return the current time in milliseconds', () => {
-    expect(typeof dateKit.getTime()).toBe('number')
+    expect(typeof datekit().getTime()).toBe('number')
   })
   it('should return the current local time string', () => {
-    expect(typeof dateKit.now()).toBe('string')
+    expect(typeof datekit().now()).toBe('string')
   })
   it('should return the current UTC time string', () => {
-    expect(typeof dateKit.utc()).toBe('string')
+    expect(typeof datekit().utc()).toBe('string')
   })
   it('should return the UTC [ 2023-11-20T04:35:00.000Z ] to local ISO format', () => {
-    const clone = dateKit.clone('2023-11-20T04:35:00.000Z')
+    const clone = datekit().clone('2023-11-20T04:35:00.000Z')
     expect(clone.iso()).toBe('2023-11-20T10:35:00')
   })
 })
 
 describe('Instance Check', () => {
-  const dateKit = new DateKit()
   it('Clone should return new isntance', () => {
-    const clone = dateKit.clone()
+    const clone = datekit().clone()
     expect(clone).toBeInstanceOf(DateKit)
   })
   it('Manipulation should return new isntance', () => {
-    const plus = dateKit.plus(2, 'minute')
-    const minus = dateKit.minus(2, 'minute')
+    const plus = datekit().plus(2, 'minute')
+    const minus = datekit().minus(2, 'minute')
     expect(plus).toBeInstanceOf(DateKit)
     expect(minus).toBeInstanceOf(DateKit)
   })
   it('Set TimeZone should return new isntance', () => {
-    const tz = dateKit.tz('Asia/Dhaka')
+    const tz = datekit().tz('Asia/Dhaka')
     expect(tz).toBeInstanceOf(DateKit)
   })
 })
 
 describe('Manipulate', () => {
-  const dateKit = new DateKit('2023-11-20T10:35:00')
+  const dateKit = datekit('2023-11-20T10:35:00')
 
   it('Add 2 hour 5 minute to 2023-11-20T10:35:00 (ISO)', () => {
     expect(dateKit.iso()).toBe('2023-11-20T10:35:00')
@@ -53,14 +52,14 @@ describe('Manipulate', () => {
 })
 
 describe('Time Status', () => {
-  const dateKit = new DateKit('2023-11-20T10:35:00')
+  const dateKit = datekit('2023-11-20T10:35:00')
   it('should return the string', () => {
     expect(typeof dateKit.status()).toBe('string')
   })
 })
 
 describe('Format', () => {
-  const dateKit = new DateKit('2023-11-09 10:35:00')
+  const dateKit = datekit('2023-11-09 10:35:00')
   it('Formats [Year, Month, Day, Hour, Minute, Second]', () => {
     expect(dateKit.format('YYYY')).toBe('2023')
     expect(dateKit.format('MMM')).toBe('Nov')
