@@ -1,4 +1,4 @@
-import { DateTimeInput, DateTimeOptions } from '../types/datetime'
+import { DateKitInput, DateKitOptions } from '../types/datekit'
 import { RTFS, UnitType } from '../types/util'
 import {
   MILLISECONDS_A_DAY,
@@ -10,12 +10,12 @@ import {
 } from './constant'
 import Util from './util'
 
-export default class DateTime {
+export default class DateKit {
   private $d: Date
   protected $l?: Date
-  private _config: Partial<DateTimeOptions> = {}
+  private _config: Partial<DateKitOptions> = {}
 
-  constructor(date?: DateTimeInput, options?: DateTimeOptions) {
+  constructor(date?: DateKitInput, options?: DateKitOptions) {
     if (date) this.$l = new Date()
     this.$d = this._create(date)
     //Config
@@ -27,10 +27,10 @@ export default class DateTime {
       offset: Util.offs(this.$d).z,
     }
     // console.log('config :', config);
-    this._config = config as DateTimeOptions
+    this._config = config as DateKitOptions
   }
 
-  protected _create(date?: DateTimeInput): Date {
+  protected _create(date?: DateKitInput): Date {
     if (date) {
       if (date instanceof Date) {
         return date
@@ -39,7 +39,7 @@ export default class DateTime {
       } else if (typeof date === 'number') {
         return new Date(date)
       } else {
-        throw new Error('Given date formate not support!')
+        throw new Error('Given datetime formate not support!')
       }
     } else {
       return new Date()
@@ -47,26 +47,26 @@ export default class DateTime {
   }
 
   /**
-   * Get or set timezone. When you set timezone it will return new instance of DateTime object
+   * Get or set timezone. When you set timezone it will return new instance of DateKit object
    * @param timeZone String of time zone
-   * @returns timezone string | new instance of DateTime class
+   * @returns timezone string | new instance of DateKit class
    */
   public tz(timeZone?: string) {
     if (!timeZone) return this._config?.timeZone || Util.offs(this?.$d).z
-    return new DateTime(this.$d, { ...this._config, timeZone })
+    return new DateKit(this.$d, { ...this._config, timeZone })
   }
 
   /**
-   * Clone the DateTime object
-   * @param withDate Old or New Date object. Otherwise creating new DateTime object
-   * @param withOptions DateTimeOptions
-   * @returns The clone of the DateTime object
+   * Clone the DateKit object
+   * @param withDate Old or New Date object. Otherwise creating new DateKit object
+   * @param withOptions DateKitOptions
+   * @returns The clone of the DateKit object
    */
   public clone(
     withDate?: Date | string | number,
-    withOptions?: DateTimeOptions
-  ): DateTime {
-    return new DateTime(withDate, withOptions || this._config)
+    withOptions?: DateKitOptions
+  ): DateKit {
+    return new DateKit(withDate, withOptions || this._config)
   }
 
   /**
@@ -118,28 +118,28 @@ export default class DateTime {
   }
 
   /**
-   * Manipulate the DateTime object
+   * Manipulate the DateKit object
    * @param item Number of item[s] to addition
    * @param additionTo year, month, week, day, hour, minute, second
-   * @returns new instance of DateTime object
+   * @returns new instance of DateKit object
    */
   public plus(item: number, additionTo: UnitType) {
     const mDate = Util.cal(this?.$d, item, additionTo)
-    return new DateTime(mDate, this._config)
+    return new DateKit(mDate, this._config)
   }
 
   /**
-   * Manipulate the DateTime object
+   * Manipulate the DateKit object
    * @param item Number of item[s] to subtract
    * @param subtractTo year, month, week, day, hour, minute, second
-   * @returns new instance of DateTime object
+   * @returns new instance of DateKit object
    */
   public minus(item: number, subtractTo: UnitType) {
     const mDate = Util.cal(this?.$d, item, subtractTo, 'sub')
-    return new DateTime(mDate, this._config)
+    return new DateKit(mDate, this._config)
   }
 
-  public diff(item: DateTimeInput, unit?: UnitType, float = false) {
+  public diff(item: DateKitInput, unit?: UnitType, float = false) {
     const that = new Date(item)
     const thatTime = that.getTime()
     const thisTime = this.getTime()
@@ -182,19 +182,15 @@ export default class DateTime {
 
     return !float ? Math.floor(res) : +res.toFixed(3)
   }
-
+  /**
+   * This method returns formatted string, you can customize formatting and play with datetime. Returns ISO formatted otherwise.
+   * @param {string} f Format string
+   * @returns string
+   */
   public format(f?: string) {
     return Util.fmt(this.$d, f, {
       locale: this._config.locale,
       timeZone: this._config.timeZone,
     }).format
   }
-
-  // public parse(f = 'YYYY-MM-DD hh:mm:ss A') {
-  //   // console.log('this._config :', this._config);
-  //   return customFormat(this?.$d || this?.$l, f, {
-  //     locales: this._config.locale,
-  //     timeZone: this._config.timeZone,
-  //   }).format;
-  // }
 }
