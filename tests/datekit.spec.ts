@@ -52,9 +52,8 @@ describe('Manipulate', () => {
 })
 
 describe('Time Status', () => {
-  const dateKit = datekit('2023-11-20T10:35:00')
   it('should return the string', () => {
-    expect(typeof dateKit.status()).toBe('string')
+    expect(typeof datekit('2023-11-20T10:35:00').status()).toBe('string')
   })
 })
 
