@@ -1,9 +1,7 @@
 export interface DateKitOptions {
   locale?: string | string[]
-  format?: string
   timeZone?: string
   offset?: string
-  calendar?: string
 }
 export type DateKitInput = Date | string | number
 

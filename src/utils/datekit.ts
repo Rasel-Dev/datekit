@@ -19,10 +19,9 @@ export default class DateKit {
     if (date) this.$l = new Date()
     this.$d = this._create(date)
     //Config
-    const { locale, calendar } = new Intl.DateTimeFormat().resolvedOptions()
+    const { locale } = new Intl.DateTimeFormat().resolvedOptions()
     const config = {
       locale,
-      calendar,
       offset: Util.offs(this.$d).z,
     }
     // console.log('config :', config);
