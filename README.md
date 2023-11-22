@@ -14,9 +14,9 @@ A simple and small datetime library. Those who want to do small tasks with time 
 - [Introduction](https://github.com/Rasel-Dev/dt-parse#introduction)
 - [Installation](https://github.com/Rasel-Dev/dt-parse#installation)
 - [Usage](https://github.com/Rasel-Dev/dt-parse#usage)
-  - [Get Date & Time](https://github.com/Rasel-Dev/dt-parse#get-date-&-time)
-  - [Formatting Date & Time](https://github.com/Rasel-Dev/dt-parse#formatting-date-&-time)
-  - [Manipulate Date & Time](https://github.com/Rasel-Dev/dt-parse#manipulate-date-&-time)
+  - [Get Date & Time](https://github.com/Rasel-Dev/dt-parse#get-date--time)
+  - [Formatting Date & Time](https://github.com/Rasel-Dev/dt-parse#formatting-date--time)
+  - [Manipulate Date & Time](https://github.com/Rasel-Dev/dt-parse#manipulate-date--time)
   - [Set TimeZone](https://github.com/Rasel-Dev/dt-parse#set-timezone)
   - [Format Strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
 
