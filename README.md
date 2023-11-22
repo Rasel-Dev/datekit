@@ -1,4 +1,4 @@
-# DateKit
+# ⏰ DateKit 🧰
 
 A simple and small datetime library. Those who want to do small tasks with time can easily use this library. It uses JavaScript's built-in functions. There are no third party modules.
 
@@ -44,68 +44,68 @@ npm install datekit
 
 ### Get Date & Time
 
-```
+```javascript
 // Get current timestemps in milliseconds.
-datekit.getTime() // [ e.g. 1700454900000 ] in milliseconds
+datekit.getTime() // e.g. 1700454900000 in milliseconds
 
 // Get current date & time
-datekit.now() // [ e.g. 2023-11-22T17:53:01 ]
+datekit.now() // e.g. 2023-11-22T17:53:01
 ```
 
 ISO & UTC
 
-```
+```javascript
 // Get local date & time.
-datekit.iso() // [ e.g. 2023-11-20T10:35:00 ]
+datekit.iso() // e.g. 2023-11-20T10:35:00
 
 // Get UTC date & time
-datekit.utc() // [ e.g. 2023-11-20T04:35:00.000Z ]
+datekit.utc() // e.g. 2023-11-20T04:35:00.000Z
 ```
 
 ### Formatting Date & Time
 
 You can customise your date & time like `'YYYY-MM-DD HH:mm:ssA'` see [more format strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
 
-```
-datekit.format('YYYY-MM-DD HH:mm:ssA') // [ e.g. 2023-11-20 10:35:00PM ]
+```javascript
+datekit.format('YYYY-MM-DD HH:mm:ssA') // e.g. 2023-11-20 10:35:00PM
 
-datekit.format('YYYY-MM-DD') // [ e.g. 2023-11-20 ]
+datekit.format('YYYY-MM-DD') // e.g. 2023-11-20
 
-datekit.format('HH:mm:ss A') // [ e.g. 10:35:00 PM ]
+datekit.format('HH:mm:ss A') // e.g. 10:35:00 PM
 
 // locals
 
-datekit.format('LTS') // [ e.g. 10:35:00 PM ]
+datekit.format('LTS') // e.g. 10:35:00 PM
 
-datekit.format('LL') // [ e.g. November 20, 2023 ]
+datekit.format('LL') // e.g. November 20, 2023
 ```
 
 ### Manipulate Date & Time
 
 Addition date & time :
 
-```
+```javascript
 const date = datekit.plus(5, 'minute')
 date.iso() // return datetime with extra 5 minutes
 ```
 
 Subtraction date & time :
 
-```
+```javascript
 const date = datekit.minus(5, 'minute')
 date.iso() // return datetime with less 5 minutes
 ```
 
 Addition & Subtraction together :
 
-```
+```javascript
 const date = datekit.plus(15, 'minute').minus(5, 'minute')
 date.iso() // return datetime with extra 10 minutes
 ```
 
 ### Set TimeZone
 
-```
+```javascript
 const dateTz = datekit.tz('Asia/Dhaka')
 
 dateTz.now() // get current date & time based on TimeZone
@@ -113,7 +113,6 @@ dateTz.now() // get current date & time based on TimeZone
 // or
 
 datekit.tz('Asia/Dhaka').now() // get current date & time based on TimeZone
-
 ```
 
 ### Format Strings
@@ -162,3 +161,7 @@ Available format strings
 | lll   | MMM D, YYYY h:mm A        |
 | ll    | MMM D, YYYY               |
 | l     | M/D/YYYY                  |
+
+## Authors
+
+- [@Rasel-Dev](https://github.com/Rasel-Dev)
