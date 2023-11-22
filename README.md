@@ -17,7 +17,9 @@ A simple and small datetime library. Those who want to do small tasks with time 
   - [Get Date & Time](https://github.com/Rasel-Dev/dt-parse#get-date--time)
   - [Formatting Date & Time](https://github.com/Rasel-Dev/dt-parse#formatting-date--time)
   - [Manipulate Date & Time](https://github.com/Rasel-Dev/dt-parse#manipulate-date--time)
+  - [Status](https://github.com/Rasel-Dev/dt-parse#status)
   - [Set TimeZone](https://github.com/Rasel-Dev/dt-parse#set-timezone)
+  - [Clone Object](https://github.com/Rasel-Dev/dt-parse#clone-object)
   - [Format Strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
 
 ## Introduction
@@ -34,10 +36,10 @@ To use DateKit in your project, you can include it via a script tag or install i
 <script src="path/to/datekit.js"></script>
 ```
 
-### NPM
+### NPM / YARN
 
 ```
-npm install datekit
+upcoming...
 ```
 
 ## Usage
@@ -46,20 +48,20 @@ npm install datekit
 
 ```javascript
 // Get current timestemps in milliseconds.
-datekit.getTime() // e.g. 1700454900000 in milliseconds
+datekit().getTime() // e.g. 1700454900000 in milliseconds
 
 // Get current date & time
-datekit.now() // e.g. 2023-11-22T17:53:01
+datekit().now() // e.g. 2023-11-22T17:53:01
 ```
 
 ISO & UTC
 
 ```javascript
 // Get local date & time.
-datekit.iso() // e.g. 2023-11-20T10:35:00
+datekit().iso() // e.g. 2023-11-20T10:35:00
 
 // Get UTC date & time
-datekit.utc() // e.g. 2023-11-20T04:35:00.000Z
+datekit().utc() // e.g. 2023-11-20T04:35:00.000Z
 ```
 
 ### Formatting Date & Time
@@ -67,17 +69,17 @@ datekit.utc() // e.g. 2023-11-20T04:35:00.000Z
 You can customise your date & time like `'YYYY-MM-DD HH:mm:ssA'` see [more format strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
 
 ```javascript
-datekit.format('YYYY-MM-DD HH:mm:ssA') // e.g. 2023-11-20 10:35:00PM
+datekit().format('YYYY-MM-DD HH:mm:ssA') // e.g. 2023-11-20 10:35:00PM
 
-datekit.format('YYYY-MM-DD') // e.g. 2023-11-20
+datekit().format('YYYY-MM-DD') // e.g. 2023-11-20
 
-datekit.format('HH:mm:ss A') // e.g. 10:35:00 PM
+datekit().format('HH:mm:ss A') // e.g. 10:35:00 PM
 
 // locals
 
-datekit.format('LTS') // e.g. 10:35:00 PM
+datekit().format('LTS') // e.g. 10:35:00 PM
 
-datekit.format('LL') // e.g. November 20, 2023
+datekit().format('LL') // e.g. November 20, 2023
 ```
 
 ### Manipulate Date & Time
@@ -85,34 +87,66 @@ datekit.format('LL') // e.g. November 20, 2023
 Addition date & time :
 
 ```javascript
-const date = datekit.plus(5, 'minute')
+const date = datekit().plus(5, 'minute')
 date.iso() // return datetime with extra 5 minutes
 ```
 
 Subtraction date & time :
 
 ```javascript
-const date = datekit.minus(5, 'minute')
+const date = datekit().minus(5, 'minute')
 date.iso() // return datetime with less 5 minutes
 ```
 
 Addition & Subtraction together :
 
 ```javascript
-const date = datekit.plus(15, 'minute').minus(5, 'minute')
+const date = datekit().plus(15, 'minute').minus(5, 'minute')
 date.iso() // return datetime with extra 10 minutes
+```
+
+### Status
+
+```javascript
+datekit().status() // now
+
+datekit('2023-11-22T17:53:01').status() // e.g. 4 hours ago [ default: long ]
+
+datekit('2023-11-22T17:53:01').status('narrow') // e.g. 4h ago
+
+datekit('2023-11-22T17:53:01').status('short') // e.g. 4 hr. ago
+
+datekit('2023-11-19T17:53:01').status() // e.g. 3 days ago
+
+datekit('2023-11-15T17:53:01').status() // e.g. 1 week ago
 ```
 
 ### Set TimeZone
 
 ```javascript
-const dateTz = datekit.tz('Asia/Dhaka')
+const dateTz = datekit().tz('Asia/Dhaka')
 
 dateTz.now() // get current date & time based on TimeZone
 
 // or
 
-datekit.tz('Asia/Dhaka').now() // get current date & time based on TimeZone
+datekit().tz('Asia/Dhaka').now() // get current date & time based on TimeZone
+```
+
+## Clone Object
+
+Clone datekit object
+
+```javascript
+const datekitObj = datekit()
+
+datekitObj.now()
+...
+// clone datekit object
+
+const clone = datekitObj.clone() // or datekitObj.clone('2023-11-20T04:35:00.000Z')
+
+clone.now()
 ```
 
 ### Format Strings
