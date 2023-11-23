@@ -152,7 +152,7 @@ clone.now()
 
 ## Browser VS Node
 
-When you working on Html page, you should call `datekit.default()` instead of `datekit()`. Because bundle file export `datekit` as a default. So only moduler or node environment can accessible using `datekit()`.
+When you working with Html page, you should call `datekit.default()` instead of `datekit()`. Because bundle file export `datekit` as a default. So only moduler or node environment can accessible using `datekit()`.
 
 How to use `datekit` inside Html page :
 
@@ -163,6 +163,7 @@ How to use `datekit` inside Html page :
 <!-- Use this module -->
 <script>
   const date = datekit.default()
+  // -> date.now(), date.utc(), date.format() and so on...
   // ...
 </script>
 ```
