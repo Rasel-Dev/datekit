@@ -20,7 +20,7 @@ A simple and small datetime library. Those who want to do small tasks with time 
   - [Status](https://github.com/Rasel-Dev/dt-parse#status)
   - [Set TimeZone](https://github.com/Rasel-Dev/dt-parse#set-timezone)
   - [Clone Object](https://github.com/Rasel-Dev/dt-parse#clone-object)
-- [Browser VS Node](https://github.com/Rasel-Dev/dt-parse#broweser-vs-node)
+- [Browser VS Node](https://github.com/Rasel-Dev/dt-parse#browser-vs-node)
 - [Format Strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
 
 ## Introduction
