@@ -20,7 +20,8 @@ A simple and small datetime library. Those who want to do small tasks with time 
   - [Status](https://github.com/Rasel-Dev/dt-parse#status)
   - [Set TimeZone](https://github.com/Rasel-Dev/dt-parse#set-timezone)
   - [Clone Object](https://github.com/Rasel-Dev/dt-parse#clone-object)
-  - [Format Strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
+- [Browser VS Node](https://github.com/Rasel-Dev/dt-parse#broweser-vs-node)
+- [Format Strings](https://github.com/Rasel-Dev/dt-parse#format-strings)
 
 ## Introduction
 
@@ -32,8 +33,8 @@ To use DateKit in your project, you can include it via a script tag or install i
 
 ### Script Tag
 
-```
-<script src="path/to/datekit.js"></script>
+```html
+<script src="path/to/datekit.min.js"></script>
 ```
 
 ### NPM / YARN
@@ -149,7 +150,26 @@ const clone = datekitObj.clone() // or datekitObj.clone('2023-11-20T04:35:00.000
 clone.now()
 ```
 
-### Format Strings
+## Browser VS Node
+
+When you working on Html page, you should call `datekit.default()` instead of `datekit()`. Because bundle file export `datekit` as a default. So only moduler or node environment can accessible using `datekit()`.
+
+How to use `datekit` inside Html page :
+
+```html
+<!-- Load the module -->
+<script src="path/to/datekit.min.js"></script>
+
+<!-- Use this module -->
+<script>
+  const date = datekit.default()
+  // ...
+</script>
+```
+
+Now you can access available methods using this `date` variable.
+
+## Format Strings
 
 Available format strings
 
@@ -178,8 +198,8 @@ Available format strings
 | m       |    9    | minute number  |
 | ss      |   08    | 2 digit second |
 | s       |    8    | second number  |
-| a       |  AM/PM  | Meridiem       |
-| A       |  AM/PM  | Meridiem       |
+| a       |  am/pm  | Day Period     |
+| A       |  AM/PM  | Day Period     |
 
 > Local formats
 
