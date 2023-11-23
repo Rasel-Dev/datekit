@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: 'datekit.min.js',
     library: 'datekit',
     libraryTarget: 'umd',
   },

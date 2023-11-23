@@ -61,17 +61,13 @@ const offset = ($d: Date) => {
   const mOffset = tzPos % 60
   const sign = tzOffset < 0 ? '+' : '-'
   const z = `${sign}${padStart(hOffset + '')}:${padStart(mOffset + '')}`
-  // console.log('z :', z);
   const zz = `${sign}${padStart(hOffset + '')}${padStart(mOffset + '')}`
-  // console.log('zz :', zz);
   return { z, zz, offset: tzOffset }
 }
 
 const extractUtc = (date: Date) => {
   const $d = new Date(date)
   const { z, zz } = offset($d)
-  // console.log('offset($d) :', offset($d));
-  // extract($d);
   // Get the individual date and time components of UTC.
   const Y = $d.getUTCFullYear()
   const M = $d.getUTCMonth() + 1
@@ -85,36 +81,30 @@ const extractUtc = (date: Date) => {
 }
 
 const $f = ($d: Date, config?: IntlConfig) => {
-  // console.log('config :', config)
   if (!config) return null
   const { locale, ...options } = config
-  // console.log('locale, options :', locale, options)
+
   return new Intl.DateTimeFormat(locale, options).formatToParts($d)
 }
 
 const toIso = (d: Date) => {
   const { Y, M, D, h, m, s } = extract(d)
-  // console.log('extract(d) :', extract(d));
+
   return `${Y}-${padStart(M + '')}-${padStart(D + '')}T${padStart(
     h + ''
   )}:${padStart(m + '')}:${padStart(s + '')}`
 }
 
 const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
-  // console.log('d: Date, f = DEFAULT_FORMAT, config :', d, f, config)
-  // console.log(extractUtc(d));
-
   const format = f.trim()
   let output = format
   const formatTokens = format.match(FMT_REGX)!
   const localFormatTokens = format.match(L_FMT_REGX)
-  // console.log('formatTokens :', formatTokens)
   const components: Intl.DateTimeFormatPart[] = []
   let opts: Record<string, string | FormatExtractorType> = {}
 
   if (formatTokens) {
     for (const token of formatTokens) {
-      // console.log('token :', token)
       const availToken = availableTokens?.[token]
       const tokenRx = new RegExp(`${token[0]}+`, 'g')
       const invalidFormat = formatTokens.find((t) => tokenRx.test(t))
@@ -130,7 +120,6 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
         )
       }
 
-      // console.log('availToken :', availToken)
       // normal token
       if (availToken) {
         const cfg = availToken[0]
@@ -140,16 +129,18 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
           typeof cfg === 'object'
             ? $f(d, !config ? cfg : { ...cfg, ...config })
             : []
-        // console.log('part :', token, part);
+
         const fp = part?.find((cycle) => cycle.type === type)
-        // console.log('fp :', fp);
+
         if (part) components.push(...part)
-        // console.log('part :', part);
+
         if (['A', 'a'].includes(token)) {
           const cp = components?.find((cycle) => cycle.type === type)
-          // console.log('cp :', cp, type, components);
-          const md = (token === 'a' ? cp?.value.toLowerCase() : cp?.value) || ''
-          // console.log('md :', md);
+
+          const md =
+            (token === 'a'
+              ? cp?.value.toLowerCase()
+              : cp?.value.toUpperCase()) || ''
           output = output.replace(/dayPeriod/g, md)
           opts[type] = md
           continue
@@ -160,18 +151,11 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
         output = output.replace(type, withPadValue || '')
         opts[type] = withPadValue + ''
       }
-      // local token
-      // if (locTokFor)
-      //   output = output.replace(
-      //     token,
-      //     customFormat(d, locTokFor, config).format
-      //   )
     }
   }
 
   if (localFormatTokens) {
     for (const token of localFormatTokens) {
-      // console.log('token :', token)
       const locTokFor = localizedTokenString?.[token]
       const tokenRx = new RegExp(`${token[0]}+`, 'g')
       if (!locTokFor) {

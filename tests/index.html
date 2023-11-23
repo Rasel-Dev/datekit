@@ -11,18 +11,25 @@
     <br />
     <input type="datetime-local" name="dt" id="dt" onchange="dateInput()" />
 
-    <script src="../dist/bundle.js"></script>
+    <script src="../dist/datekit.min.js"></script>
     <script>
       // Wait for the script to be fully loaded
       // window.addEventListener('DOMContentLoaded', () => {
       // Access the default export from the module
       function dateInput() {
         const dt = document.getElementById('dt')
-        const myDateTime = new DateTime.default(dt.value)
-        console.log(dt.value)
-        console.log(myDateTime.utc())
-        console.log(myDateTime.now())
-        console.log(myDateTime.format())
+        const myDateTime = datekit.default(dt.value)
+        console.log('Input: ', dt.value)
+        console.log('Utc: ', myDateTime.utc())
+        console.log('Current time: ', myDateTime.now())
+        console.log('Formated: ', myDateTime.format('YYYY-MM-DD hh:mm:ssA'))
+        // calculated
+        const op = myDateTime.minus(3, 'day').minus(2, 'hour')
+        console.log('Status: ', op.status('short'))
+        console.log('Utc: ', op.utc())
+        console.log('Formated: ', op.format('YYYY-MM-DD hh:mm:ssA'))
+        console.log('Diff: ', op.diff(op.now(), 'hour'))
+        console.log('Diff: ', op.clone().status())
       }
       // })
     </script>
