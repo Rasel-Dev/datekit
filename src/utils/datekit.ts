@@ -24,7 +24,6 @@ export default class DateKit {
       locale,
       offset: Util.offs(this.$d).z,
     }
-    // console.log('config :', config);
     this._config = !options
       ? config
       : ({ ...config, ...options } as DateKitOptions)

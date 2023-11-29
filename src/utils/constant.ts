@@ -37,8 +37,8 @@ export const availableTokens: Record<string, [Object | string, string]> = {
   m: [{ minute: 'numeric' }, 'minute'],
   ss: [{ second: '2-digit' }, 'second'],
   s: [{ second: 'numeric' }, 'second'],
-  A: ['AMPM', 'dayPeriod'], // meridiem
-  a: ['ampm', 'dayPeriod'], // meridiem
+  A: [{ hour: '2-digit', hour12: true }, 'dayPeriod'], // meridiem
+  a: [{ hour: '2-digit', hour12: true }, 'dayPeriod'], // meridiem
 }
 
 export const localizedTokenString: Record<string, string> = {

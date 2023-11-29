@@ -108,7 +108,7 @@ const extract = (date: Date) => {
 //   return { $d, Y, M, D, W, H, m, s, ms, z, zz }
 // }
 
-const $f = ($d: Date, config?: IntlConfig) => {
+const $format = ($d: Date, config?: IntlConfig) => {
   if (!config) return null
   const { locale, ...options } = config
   return new Intl.DateTimeFormat(locale, options).formatToParts($d)
@@ -129,17 +129,38 @@ const customFormat = (
 ) => {
   const format = f.trim()
   let output = format
-  const formatTokens = format.match(FMT_REGX)!
+  const formatTokens = format.match(FMT_REGX)
   const localFormatTokens = format.match(L_FMT_REGX)
-  const components: Intl.DateTimeFormatPart[] = []
   let opts: Record<string, string | FormatExtractorType> = {}
 
   if (formatTokens) {
+    const components: Record<string, string> = {}
+
+    // Setup meridiem first
+    const meridiem = formatTokens.find((token) => ['A', 'a'].includes(token))
+    if (meridiem) {
+      const conf = availableTokens?.[meridiem][0] as unknown as Object
+      const part = $format(d, { ...conf, ...config })
+
+      const fp = part?.find((cycle) => cycle.type === 'dayPeriod')
+
+      const md =
+        (meridiem === 'a'
+          ? fp?.value?.toLowerCase()
+          : fp?.value?.toUpperCase()) || ''
+      output = output.replace(`${meridiem}`, md)
+      opts.dayPeriod = md
+      formatTokens.splice(
+        formatTokens.findIndex((t) => t === meridiem),
+        1
+      )
+    }
+
     for (const token of formatTokens) {
       const availToken = availableTokens?.[token]
       const tokenRx = new RegExp(`${token[0]}+`, 'g')
-      const invalidFormat = formatTokens.find((t) => tokenRx.test(t))
-      if (!availToken || invalidFormat !== token) {
+      const invalidFormat = formatTokens.find((t) => tokenRx.test(t)) !== token
+      if (!availToken || invalidFormat) {
         const available = Object.keys(availableTokens).filter((t) =>
           t.match(tokenRx)
         )
@@ -158,24 +179,13 @@ const customFormat = (
         output = output.replace(token, type)
         const part =
           typeof cfg === 'object'
-            ? $f(d, !config ? cfg : { ...cfg, ...config })
+            ? $format(d, !config ? cfg : { ...cfg, ...config })
             : []
 
         const fp = part?.find((cycle) => cycle.type === type)
 
-        if (part) components.push(...part)
+        if (part && fp?.type) components[fp.type] = fp?.value
 
-        if (['A', 'a'].includes(token)) {
-          const cp = components?.find((cycle) => cycle.type === type)
-
-          const md =
-            (token === 'a'
-              ? cp?.value.toLowerCase()
-              : cp?.value.toUpperCase()) || ''
-          output = output.replace(/dayPeriod/g, md)
-          opts[type] = md
-          continue
-        }
         const withPadValue = manualPadOptions.includes(token)
           ? padStart(fp?.value)
           : fp?.value
