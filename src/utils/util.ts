@@ -1,4 +1,5 @@
 import {
+  AdjustProtoOptions,
   FormatExtractorType,
   IntlConfig,
   OpType,
@@ -12,6 +13,7 @@ import {
   L_FMT_REGX,
   MILLISECONDS_A_SECOND,
   SECONDS_A_MINUTE,
+  UGLY_REGX,
   availableTokens,
   invalid_token,
   localizedTokenString,
@@ -39,19 +41,31 @@ const weekStartDate = ($d: Date) => {
   const diff = (dayAt + 6) % 7
   return new Date(clone.setDate(clone.getDate() - diff))
 }
-
-const extract = (date: Date) => {
+// AdjustPrototypeProparty
+const adjustProto = (date: Date, options: AdjustProtoOptions) => {
+  const { unit, utc, item, op } = options
   const $d = new Date(date)
-  // Get the individual date and time components.
-  const Y = $d.getFullYear()
-  const M = $d.getMonth() + 1
-  const D = $d.getDate()
-  const w = $d.getDay()
-  const h = $d.getHours()
-  const m = $d.getMinutes()
-  const s = $d.getSeconds()
-  const ms = $d.getMilliseconds()
-  return { $d, Y, M, D, w, h, m, s, ms }
+  const proto = (set = false) => {
+    const prefixPad = `${!set ? 'get' : 'set'}${utc ? 'UTC' : ''}`
+    const proparty = {
+      year: `${prefixPad}FullYear`,
+      month: `${prefixPad}Month`,
+      day: `${prefixPad}Date`,
+      weekday: `${prefixPad}Day`,
+      hour: `${prefixPad}Hours`,
+      minute: `${prefixPad}Minutes`,
+      second: `${prefixPad}Seconds`,
+      millisecond: `${prefixPad}Milliseconds`,
+    }[unit]
+    return proparty
+  }
+  const p = proto()
+  const clone = $d as unknown as Record<string, Function>
+  if (!item) return clone[p]()
+
+  const unitItem = clone[p]()
+  clone[proto(true)](op === 'add' ? unitItem + item : unitItem - item)
+  return clone
 }
 
 const offset = ($d: Date) => {
@@ -65,37 +79,54 @@ const offset = ($d: Date) => {
   return { z, zz, offset: tzOffset }
 }
 
-const extractUtc = (date: Date) => {
+const extract = (date: Date) => {
   const $d = new Date(date)
-  const { z, zz } = offset($d)
-  // Get the individual date and time components of UTC.
-  const Y = $d.getUTCFullYear()
-  const M = $d.getUTCMonth() + 1
-  const D = $d.getUTCDate()
-  const W = $d.getUTCDay()
-  const H = $d.getUTCHours()
-  const m = $d.getUTCMinutes()
-  const s = $d.getUTCSeconds()
-  const ms = $d.getUTCMilliseconds()
-  return { $d, Y, M, D, W, H, m, s, ms, z, zz }
+  // Get the individual date and time components.
+  const Y = adjustProto($d, { unit: 'year' })
+  const M = adjustProto($d, { unit: 'month' }) + 1
+  const D = adjustProto($d, { unit: 'day' })
+  const w = adjustProto($d, { unit: 'weekday' })
+  const h = adjustProto($d, { unit: 'hour' })
+  const m = adjustProto($d, { unit: 'minute' })
+  const s = adjustProto($d, { unit: 'second' })
+  const ms = adjustProto($d, { unit: 'millisecond' })
+  return { $d, Y, M, D, w, h, m, s, ms }
 }
+
+// const extractUtc = (date: Date) => {
+//   const $d = new Date(date)
+//   const { z, zz } = offset($d)
+//   // Get the individual date and time components of UTC.
+//   const Y = adjustProto($d, { unit: 'year', utc: true })
+//   const M = adjustProto($d, { unit: 'month', utc: true }) + 1
+//   const D = adjustProto($d, { unit: 'date', utc: true })
+//   const W = adjustProto($d, { unit: 'day', utc: true })
+//   const H = adjustProto($d, { unit: 'hour', utc: true })
+//   const m = adjustProto($d, { unit: 'minute', utc: true })
+//   const s = adjustProto($d, { unit: 'second', utc: true })
+//   const ms = adjustProto($d, { unit: 'millisecond', utc: true })
+//   return { $d, Y, M, D, W, H, m, s, ms, z, zz }
+// }
 
 const $f = ($d: Date, config?: IntlConfig) => {
   if (!config) return null
   const { locale, ...options } = config
-
   return new Intl.DateTimeFormat(locale, options).formatToParts($d)
 }
 
 const toIso = (d: Date) => {
   const { Y, M, D, h, m, s } = extract(d)
-
   return `${Y}-${padStart(M + '')}-${padStart(D + '')}T${padStart(
     h + ''
   )}:${padStart(m + '')}:${padStart(s + '')}`
 }
 
-const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
+const customFormat = (
+  d: Date,
+  f = DEFAULT_FORMAT,
+  config?: IntlConfig,
+  pritty = false
+) => {
   const format = f.trim()
   let output = format
   const formatTokens = format.match(FMT_REGX)!
@@ -178,7 +209,10 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
     }
   }
 
-  return { extract: opts, format: output.trim() }
+  return {
+    extract: opts,
+    format: !pritty ? output.trim() : output.replace(UGLY_REGX, ' ').trim(),
+  }
 }
 
 const calculateTime = (
@@ -189,60 +223,23 @@ const calculateTime = (
 ) => {
   if (isNaN(item)) throw new Error('Item should be a number')
 
-  const { $d, Y, M, D, w, h, m, s } = extract(d)
-
   switch (partTo) {
     case 'year':
-      if (o === 'add') {
-        $d.setFullYear(Y + item)
-        return $d
-      }
-      $d.setFullYear(Y - item)
-      return $d
+      return adjustProto(d, { unit: 'year', item, op: o })
     case 'month':
-      if (o === 'add') {
-        $d.setMonth(M + item)
-        return $d
-      }
-      $d.setMonth(M - item)
-      return $d
+      return adjustProto(d, { unit: 'month', item, op: o })
     case 'week':
-      if (o === 'add') {
-        $d.setDate(D + item * 7)
-        return $d
-      }
-      $d.setDate(D - item * 7)
-      return $d
+      return adjustProto(d, { unit: 'day', item: item * 7, op: o })
     case 'day':
-      if (o === 'add') {
-        $d.setDate(D + item)
-        return $d
-      }
-      $d.setDate(D - item)
-      return $d
+      return adjustProto(d, { unit: 'day', item, op: o })
     case 'hour':
-      if (o === 'add') {
-        $d.setHours(h + item)
-        return $d
-      }
-      $d.setHours(h - item)
-      return $d
+      return adjustProto(d, { unit: 'hour', item, op: o })
     case 'minute':
-      if (o === 'add') {
-        $d.setMinutes(m + item)
-        return $d
-      }
-      $d.setMinutes(m - item)
-      return $d
+      return adjustProto(d, { unit: 'minute', item, op: o })
     case 'second':
-      if (o === 'add') {
-        $d.setSeconds(s + item)
-        return $d
-      }
-      $d.setSeconds(s - item)
-      return $d
+      return adjustProto(d, { unit: 'second', item, op: o })
     default:
-      return $d
+      return d
   }
 }
 
@@ -292,7 +289,7 @@ const msStatus = (ms: number, d: Date): { value: number; unit: RTFU } => {
 export default {
   offs: offset,
   ext: extract,
-  extu: extractUtc,
+  // extu: extractUtc,
   iso: toIso,
   fmt: customFormat,
   cal: calculateTime,

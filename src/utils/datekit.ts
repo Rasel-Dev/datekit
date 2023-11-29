@@ -16,7 +16,7 @@ export default class DateKit {
   private _config: Partial<DateKitOptions> = {}
 
   constructor(date?: DateKitInput, options?: DateKitOptions) {
-    if (date) this.$l = new Date()
+    // if (date) this.$l = new Date()
     this.$d = this._create(date)
     //Config
     const { locale } = new Intl.DateTimeFormat().resolvedOptions()
@@ -42,7 +42,8 @@ export default class DateKit {
         throw new Error('Given datetime formate not support!')
       }
     } else {
-      return new Date()
+      this.$l = new Date()
+      return this.$l
     }
   }
 
@@ -124,7 +125,7 @@ export default class DateKit {
    * @returns new instance of DateKit object
    */
   public plus(item: number, additionTo: UnitType) {
-    const mDate = Util.cal(this?.$d, item, additionTo)
+    const mDate = Util.cal(this.$d, item, additionTo)
     return new DateKit(mDate, this._config)
   }
 
@@ -135,15 +136,23 @@ export default class DateKit {
    * @returns new instance of DateKit object
    */
   public minus(item: number, subtractTo: UnitType) {
-    const mDate = Util.cal(this?.$d, item, subtractTo, 'sub')
+    const mDate = Util.cal(this.$d, item, subtractTo, 'sub')
     return new DateKit(mDate, this._config)
   }
 
+  /**
+   * It returns difference between your DateKitInput(item) and local/previous datetimte
+   * @param item DateKitInput -> Date | string | number
+   * @param unit "year" | "month" | "week" | "day" | "hour" | "minute" | "second"
+   * @param float
+   * @returns Based on unit. Otherwise number of milliseconds
+   */
   public diff(item: DateKitInput, unit?: UnitType, float = false) {
     const that = new Date(item)
     const thatTime = that.getTime()
     const thisTime = this.getTime()
     const millisecondsDiff = thatTime - thisTime
+    console.log('millisecondsDiff :', millisecondsDiff)
 
     const monthsDiff = () =>
       (that.getFullYear() - this.$d.getFullYear()) * 12 +
@@ -188,10 +197,16 @@ export default class DateKit {
    * @param {string} f Format string
    * @returns string
    */
-  public format(f?: string) {
-    return Util.fmt(this.$d, f, {
-      locale: this._config.locale,
-      timeZone: this._config.timeZone,
-    }).format
+  public format(f?: string, extract = false) {
+    const res = Util.fmt(
+      this.$d,
+      f,
+      {
+        locale: this._config.locale,
+        timeZone: this._config.timeZone,
+      },
+      true
+    )
+    return !extract ? res.format : res
   }
 }
