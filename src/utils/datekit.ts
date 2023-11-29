@@ -16,7 +16,7 @@ export default class DateKit {
   private _config: Partial<DateKitOptions> = {}
 
   constructor(date?: DateKitInput, options?: DateKitOptions) {
-    // if (date) this.$l = new Date()
+    if (date) this.$l = new Date()
     this.$d = this._create(date)
     //Config
     const { locale } = new Intl.DateTimeFormat().resolvedOptions()
@@ -42,8 +42,7 @@ export default class DateKit {
         throw new Error('Given datetime formate not support!')
       }
     } else {
-      this.$l = new Date()
-      return this.$l
+      return new Date()
     }
   }
 
