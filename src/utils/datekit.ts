@@ -196,8 +196,8 @@ export default class DateKit {
    * @param {string} f Format string
    * @returns string
    */
-  public format(f?: string, extract = false) {
-    const res = Util.fmt(
+  public format(f?: string) {
+    return Util.fmt(
       this.$d,
       f,
       {
@@ -205,7 +205,23 @@ export default class DateKit {
         timeZone: this._config.timeZone,
       },
       true
-    )
-    return !extract ? res.format : res
+    ).format
+  }
+
+  /**
+   * This method returns format object, you can customize formatting and play with datetime. Returns ISO format object otherwise.
+   * @param {string} f Format string
+   * @returns string
+   */
+  public extract(f?: string) {
+    return Util.fmt(
+      this.$d,
+      f,
+      {
+        locale: this._config.locale,
+        timeZone: this._config.timeZone,
+      },
+      true
+    ).extract
   }
 }
