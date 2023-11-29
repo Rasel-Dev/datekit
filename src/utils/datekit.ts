@@ -152,7 +152,6 @@ export default class DateKit {
     const thatTime = that.getTime()
     const thisTime = this.getTime()
     const millisecondsDiff = thatTime - thisTime
-    console.log('millisecondsDiff :', millisecondsDiff)
 
     const monthsDiff = () =>
       (that.getFullYear() - this.$d.getFullYear()) * 12 +
