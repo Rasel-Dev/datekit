@@ -124,8 +124,7 @@ const toIso = (d: Date) => {
 const customFormat = (
   d: Date,
   f = DEFAULT_FORMAT,
-  config?: IntlConfig,
-  pritty = false
+  config?: IntlConfig
 ) => {
   const format = f.trim()
   let output = format
@@ -221,7 +220,7 @@ const customFormat = (
 
   return {
     extract: opts,
-    format: !pritty ? output.trim() : output.replace(UGLY_REGX, ' ').trim(),
+    format: output.trim(),
   }
 }
 

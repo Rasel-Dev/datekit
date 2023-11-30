@@ -195,15 +195,10 @@ export default class DateKit {
    * @returns string
    */
   public format(f?: string) {
-    return Util.fmt(
-      this.$d,
-      f,
-      {
-        locale: this._config.locale,
-        timeZone: this._config.timeZone,
-      },
-      true
-    ).format
+    return Util.fmt(this.$d, f, {
+      locale: this._config.locale,
+      timeZone: this._config.timeZone,
+    }).format
   }
 
   /**
@@ -212,14 +207,9 @@ export default class DateKit {
    * @returns string
    */
   public extract(f?: string) {
-    return Util.fmt(
-      this.$d,
-      f,
-      {
-        locale: this._config.locale,
-        timeZone: this._config.timeZone,
-      },
-      true
-    ).extract
+    return Util.fmt(this.$d, f, {
+      locale: this._config.locale,
+      timeZone: this._config.timeZone,
+    }).extract
   }
 }
