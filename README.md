@@ -37,10 +37,16 @@ To use DateKit in your project, you can include it via a script tag or install i
 <script src="path/to/datekit.min.js"></script>
 ```
 
-### NPM / YARN
+### NPM
 
 ```
-upcoming...
+npm install https://github.com/Rasel-Dev/datekit.git
+```
+
+### YARN
+
+```
+yarn add https://github.com/Rasel-Dev/datekit.git
 ```
 
 ## Usage
