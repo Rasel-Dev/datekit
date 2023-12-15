@@ -1,5 +1,5 @@
-import { DateKitInput, DateKitOptions, StartOfType } from '../types/datekit'
-import { RTFS, UnitType } from '../types/util'
+import { DateKitInput, DateKitOptions, StartOfType } from '../../types/index'
+import { RTFS, UnitType } from '../../types/util'
 import {
   MILLISECONDS_A_DAY,
   MILLISECONDS_A_HOUR,

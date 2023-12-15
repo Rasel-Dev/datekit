@@ -1,11 +1,11 @@
 {
   "name": "datekit",
   "version": "1.0.0",
-  "repository": "https://github.com/Rasel-Dev/Nodejs-Typescript-setup.git",
-  "author": "Rasel Developer <dev.code.get@gmail.com>",
+  "author": "Rasel Developer",
   "license": "MIT",
-  "main": "dist/bundle.js",
-  "module": "src/index.ts",
+  "main": "dist/datekit.min.js",
+  "module": "dist/datekit.min.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "dev": "nodemon",
     "test": "jest --watch",

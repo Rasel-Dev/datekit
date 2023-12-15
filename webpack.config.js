@@ -7,6 +7,7 @@ module.exports = {
     filename: 'datekit.min.js',
     library: 'datekit',
     libraryTarget: 'umd',
+    globalObject: 'this',
   },
   resolve: {
     extensions: ['.ts', '.js'],
