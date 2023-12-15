@@ -13,3 +13,5 @@ export type unitType =
   | 'minute'
   | 'second'
   | 'millisecond'
+
+export type StartOfType = 'year' | 'month' | 'week' | 'day'

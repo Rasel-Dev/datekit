@@ -13,7 +13,6 @@ import {
   L_FMT_REGX,
   MILLISECONDS_A_SECOND,
   SECONDS_A_MINUTE,
-  UGLY_REGX,
   availableTokens,
   invalid_token,
   localizedTokenString,
@@ -121,11 +120,7 @@ const toIso = (d: Date) => {
   )}:${padStart(m + '')}:${padStart(s + '')}`
 }
 
-const customFormat = (
-  d: Date,
-  f = DEFAULT_FORMAT,
-  config?: IntlConfig
-) => {
+const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
   const format = f.trim()
   let output = format
   const formatTokens = format.match(FMT_REGX)

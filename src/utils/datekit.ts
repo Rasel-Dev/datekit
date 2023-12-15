@@ -1,4 +1,4 @@
-import { DateKitInput, DateKitOptions } from '../types/datekit'
+import { DateKitInput, DateKitOptions, StartOfType } from '../types/datekit'
 import { RTFS, UnitType } from '../types/util'
 import {
   MILLISECONDS_A_DAY,
@@ -94,6 +94,50 @@ export default class DateKit {
   public getTime() {
     return this.$d.getTime()
   }
+
+  /**
+   * startOf
+   */
+  public startOf(unit: StartOfType, isStart?: boolean) {
+    const isStartOf = isStart !== undefined ? isStart : true
+
+    const calculateDate = (m = 0, d = 1) => {
+      const t = isStartOf ? [0, 0, 0] : [23, 59, 59]
+      const dt = new Date(this.$d.getFullYear(), m, d, ...t)
+      return this.clone(dt)
+    }
+
+    switch (unit) {
+      case UNITS.y:
+        return isStartOf ? calculateDate() : calculateDate(11, 31)
+      case UNITS.M:
+        return isStartOf
+          ? calculateDate(this.$d.getMonth())
+          : calculateDate(this.$d.getMonth() + 1, 0)
+      case UNITS.w: {
+        const cloneDt = new Date(this.$d)
+        // Get the day of the week (0 = Sunday, 6 = Saturday)
+        const weekAt = cloneDt.getDay()
+        const date = cloneDt.getDate()
+        cloneDt.setDate(isStartOf ? date - weekAt : date + (6 - weekAt))
+
+        return calculateDate(cloneDt.getMonth(), cloneDt.getDate())
+      }
+      case UNITS.d:
+        return calculateDate(this.$d.getMonth(), this.$d.getDate())
+
+      default:
+        return this.clone()
+    }
+  }
+
+  /**
+   * endOf
+   */
+  public endOf(unit: StartOfType) {
+    return this.startOf(unit, false)
+  }
+
   /**
    * This method return current datetime in ISO format
    */
@@ -103,6 +147,11 @@ export default class DateKit {
     }).format
   }
 
+  /**
+   * It returns status of your given initial datetime, Otherwise return now
+   * @param style "long" | "short" | "narrow"
+   * @returns [ E.g. hours ago or in hours ]
+   */
   public status(style: RTFS = 'long'): string {
     const target = (!!this?.$l && this.$d.getTime()) || 0
     const local = this.$l?.getTime() || this.$d.getTime()

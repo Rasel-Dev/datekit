@@ -51,6 +51,26 @@ describe('Manipulate', () => {
   })
 })
 
+describe('Start & End', () => {
+  const dateKit = datekit('2023-11-09 10:35:00')
+  it('Start & End of Year', () => {
+    expect(dateKit.startOf('year').format()).toBe('2023-01-01T00:00:00')
+    expect(dateKit.endOf('year').format()).toBe('2023-12-31T23:59:59')
+  })
+  it('Start & End of Month', () => {
+    expect(dateKit.startOf('month').format()).toBe('2023-11-01T00:00:00')
+    expect(dateKit.endOf('month').format()).toBe('2023-11-30T23:59:59')
+  })
+  it('Start & End of Week', () => {
+    expect(dateKit.startOf('week').format()).toBe('2023-11-05T00:00:00')
+    expect(dateKit.endOf('week').format()).toBe('2023-11-11T23:59:59')
+  })
+  it('Start & End of Day/Date', () => {
+    expect(dateKit.startOf('day').format()).toBe('2023-11-09T00:00:00')
+    expect(dateKit.endOf('day').format()).toBe('2023-11-09T23:59:59')
+  })
+})
+
 describe('Time Status', () => {
   it('should return the string', () => {
     expect(typeof datekit('2023-11-20T10:35:00').status()).toBe('string')
