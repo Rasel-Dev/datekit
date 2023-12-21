@@ -142,7 +142,7 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
         (meridiem === 'a'
           ? fp?.value?.toLowerCase()
           : fp?.value?.toUpperCase()) || ''
-      output = output.replace(`${meridiem}`, md)
+      output = output?.replace(`${meridiem}`, md)
       opts.dayPeriod = md
       formatTokens.splice(
         formatTokens.findIndex((t) => t === meridiem),
@@ -159,9 +159,9 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
           t.match(tokenRx)
         )
         throw new Error(
-          invalid_token.replace(
+          invalid_token?.replace(
             /\[(.*?)\]/g,
-            format.replace(token, `[${token}]`)
+            format?.replace(token, `[${token}]`)
           ) + `. You can use ${available.join(' or ')}`
         )
       }
@@ -170,7 +170,7 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
       if (availToken) {
         const cfg = availToken[0]
         const type = availToken[1] + ''
-        output = output.replace(token, type)
+        output = output?.replace(token, type)
         const part =
           typeof cfg === 'object'
             ? $format(d, !config ? cfg : { ...cfg, ...config })
@@ -183,7 +183,7 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
         const withPadValue = manualPadOptions.includes(token)
           ? padStart(fp?.value)
           : fp?.value
-        output = output.replace(type, withPadValue || '')
+        output = output?.replace(type, withPadValue || '')
         opts[type] = withPadValue + ''
       }
     }
@@ -198,15 +198,15 @@ const customFormat = (d: Date, f = DEFAULT_FORMAT, config?: IntlConfig) => {
           t.match(tokenRx)
         )
         throw new Error(
-          invalid_token.replace(
+          invalid_token?.replace(
             /\[(.*?)\]/g,
-            format.replace(token, `[${token}]`)
+            format?.replace(token, `[${token}]`)
           ) + `. You can use ${available.join(' or ')}`
         )
       }
       // local token
       if (locTokFor)
-        output = output.replace(
+        output = output?.replace(
           token,
           customFormat(d, locTokFor, config).format
         )
